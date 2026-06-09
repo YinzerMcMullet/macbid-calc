@@ -213,6 +213,12 @@
     <input type="text" inputmode="decimal" id="macbucks" class="dollar-input" placeholder="0.00">
   </div>
 
+  <div class="input-group">
+    <label for="assurance">Buyers Assurance Fee (optional)</label>
+    <span class="dollar">$</span>
+    <input type="text" inputmode="decimal" id="assurance" class="dollar-input" placeholder="0.00">
+  </div>
+
   <div class="checkbox-group">
     <input type="checkbox" id="transferFee">
     <label for="transferFee">Transfer Fee ($10)</label>
@@ -287,6 +293,7 @@
     <div class="row"><span class="label">Winning Bid</span><span id="outBid">$0.00</span></div>
     <div class="row"><span class="label">Buyer's Premium (15%)</span><span id="outPremium">$0.00</span></div>
     <div class="row"><span class="label">Lot Fee</span><span id="outLot">$0.00</span></div>
+    <div class="row" id="assuranceRow" style="display:none"><span class="label">Buyers Assurance</span><span id="outAssurance">$0.00</span></div>
     <div class="row" id="transferRow" style="display:none"><span class="label">Transfer Fee</span><span id="outTransfer">$10.00</span></div>
     <div class="row subtotal"><span class="label">Subtotal</span><span id="outSubtotal">$0.00</span></div>
     <div class="row"><span class="label">Sales Tax (<span id="taxLabel">6</span>%)</span><span id="outTax">$0.00</span></div>
@@ -315,6 +322,7 @@
   const bidEl = document.getElementById('bid');
   const retailEl = document.getElementById('retail');
   const macbucksEl = document.getElementById('macbucks');
+  const assuranceEl = document.getElementById('assurance');
   const transferEl = document.getElementById('transferFee');
   const taxSelectEl = document.getElementById('taxSelect');
   const customTaxEl = document.getElementById('customTax');
@@ -336,16 +344,19 @@
     const bid = parseFloat(bidEl.value) || 0;
     const retail = parseFloat(retailEl.value) || 0;
     const mb = parseFloat(macbucksEl.value) || 0;
+    const assurance = parseFloat(assuranceEl.value) || 0;
     const taxRate = getTaxRate();
     const transfer = transferEl.checked ? 10 : 0;
     const premium = bid * PREMIUM_RATE;
-    const subtotal = bid + premium + LOT_FEE + transfer;
+    const subtotal = bid + premium + LOT_FEE + assurance + transfer;
     const tax = subtotal * taxRate;
     const total = Math.max(0, subtotal + tax - mb);
 
     document.getElementById('outBid').textContent = fmt(bid);
     document.getElementById('outPremium').textContent = fmt(premium);
     document.getElementById('outLot').textContent = fmt(LOT_FEE);
+    document.getElementById('assuranceRow').style.display = assurance > 0 ? '' : 'none';
+    document.getElementById('outAssurance').textContent = fmt(assurance);
     document.getElementById('transferRow').style.display = transfer ? '' : 'none';
     document.getElementById('outSubtotal').textContent = fmt(subtotal);
     document.getElementById('taxLabel').textContent = (taxRate * 100).toFixed(1).replace(/\.0$/, '');
@@ -452,6 +463,7 @@
     bidEl.value = '';
     retailEl.value = '';
     macbucksEl.value = '';
+    assuranceEl.value = '';
     transferEl.checked = false;
     setLocationByLoc(getDefaultLoc());
     customTaxEl.value = '';
@@ -466,6 +478,7 @@
     bidEl.addEventListener(evt, calculate);
     retailEl.addEventListener(evt, calculate);
     macbucksEl.addEventListener(evt, calculate);
+    assuranceEl.addEventListener(evt, calculate);
     customTaxEl.addEventListener(evt, calculate);
   });
 
