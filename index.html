@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MacBid Price Calculator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #0a0a0a;
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 16px;
+  }
+  .card {
+    background: #141414;
+    border: 2px solid #FFB81C;
+    border-radius: 12px;
+    padding: 32px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 8px 32px rgba(255,184,28,.15);
+  }
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 6px;
+    color: #FFB81C;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: .8rem;
+    color: #666;
+    margin-bottom: 24px;
+    letter-spacing: .5px;
+  }
+  label {
+    display: block;
+    font-size: .85rem;
+    color: #999;
+    margin-bottom: 6px;
+  }
+  .input-group { margin-bottom: 20px; position: relative; }
+  .input-group .dollar {
+    position: absolute;
+    left: 14px;
+    top: 38px;
+    font-size: 1.1rem;
+    color: #666;
+  }
+  input, select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 16px;
+    outline: none;
+    transition: border-color .2s;
+    -webkit-appearance: none;
+  }
+  optgroup { color: #999; font-style: normal; }
+  option { color: #fff; background: #1a1a1a; }
+  input:focus, select:focus {
+    border-color: #FFB81C;
+  }
+  .dollar-input { padding-left: 30px; }
+  .custom-tax { margin-top: 8px; display: none; }
+  .custom-tax.show { display: block; }
+  .breakdown {
+    margin-top: 24px;
+    border-top: 1px solid #333;
+    padding-top: 16px;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: .95rem;
+  }
+  .row.subtotal {
+    border-top: 1px solid #333;
+    margin-top: 4px;
+    padding-top: 12px;
+    color: #999;
+  }
+  .row.total {
+    border-top: 2px solid #FFB81C;
+    margin-top: 8px;
+    padding-top: 14px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #FFB81C;
+  }
+  .row .label { color: #999; }
+  .row.total .label { color: #FFB81C; }
+  .markup-note {
+    text-align: center;
+    margin-top: 16px;
+    font-size: .85rem;
+    color: #999;
+  }
+  .markup-note span { color: #ff6b6b; font-weight: 600; }
+  .savings {
+    margin-top: 16px;
+    border-top: 1px solid #333;
+    padding-top: 16px;
+    display: none;
+  }
+  .savings.show { display: block; }
+  .savings-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: .95rem;
+  }
+  .savings-row .label { color: #999; }
+  .savings-row.good .val { color: #34d399; font-weight: 700; }
+  .savings-row.bad .val { color: #ff6b6b; font-weight: 700; }
+  .savings-header {
+    font-size: .8rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>MacBid Calculator</h1>
+  <div class="subtitle">Steel City Bid Check</div>
+
+  <div class="input-group">
+    <label for="bid">Your Bid Amount</label>
+    <span class="dollar">$</span>
+    <input type="text" inputmode="decimal" id="bid" class="dollar-input" placeholder="0.00" autofocus>
+  </div>
+
+  <div class="input-group">
+    <label for="retail">Retail Price (optional)</label>
+    <span class="dollar">$</span>
+    <input type="text" inputmode="decimal" id="retail" class="dollar-input" placeholder="0.00">
+  </div>
+
+  <div class="input-group">
+    <label for="taxSelect">Sales Tax Rate</label>
+    <select id="taxSelect">
+      <optgroup label="Pennsylvania &mdash; Allegheny Co. (7%)">
+        <option value="7">McKees Rocks</option>
+        <option value="7">Robinson</option>
+        <option value="7">Pittsburgh Mills (Tarentum)</option>
+        <option value="7">Monroeville</option>
+      </optgroup>
+      <optgroup label="Pennsylvania &mdash; Other Counties (6%)">
+        <option value="6">Beaver Falls (Beaver Co.)</option>
+        <option value="6">Butler (Butler Co.)</option>
+        <option value="6">Washington (Washington Co.)</option>
+        <option value="6">Washington Big Box (Washington Co.)</option>
+        <option value="6">Uniontown (Fayette Co.)</option>
+      </optgroup>
+      <optgroup label="Ohio">
+        <option value="6.5">Canton (Stark Co.) &mdash; 6.50%</option>
+        <option value="6.5">Hamilton (Butler Co.) &mdash; 6.50%</option>
+        <option value="6.75">Akron (Summit Co.) &mdash; 6.75%</option>
+        <option value="6.75">Warren (Trumbull Co.) &mdash; 6.75%</option>
+        <option value="7.5">Boardman (Mahoning Co.) &mdash; 7.50%</option>
+      </optgroup>
+      <optgroup label="Other">
+        <option value="custom">Custom...</option>
+      </optgroup>
+    </select>
+    <input type="text" inputmode="decimal" id="customTax" class="custom-tax" placeholder="Enter tax %">
+  </div>
+
+  <div class="breakdown">
+    <div class="row"><span class="label">Winning Bid</span><span id="outBid">$0.00</span></div>
+    <div class="row"><span class="label">Buyer's Premium (15%)</span><span id="outPremium">$0.00</span></div>
+    <div class="row"><span class="label">Lot Fee</span><span id="outLot">$0.00</span></div>
+    <div class="row subtotal"><span class="label">Subtotal</span><span id="outSubtotal">$0.00</span></div>
+    <div class="row"><span class="label">Sales Tax (<span id="taxLabel">6</span>%)</span><span id="outTax">$0.00</span></div>
+    <div class="row total"><span class="label">You Pay</span><span id="outTotal">$0.00</span></div>
+  </div>
+
+  <div class="markup-note" id="markupNote"></div>
+
+  <div class="savings" id="savingsSection">
+    <div class="savings-header">vs. Retail</div>
+    <div class="savings-row" id="savingsRow"><span class="label">Retail Price</span><span class="val" id="outRetail">$0.00</span></div>
+    <div class="savings-row" id="savingsDollarRow"><span class="label" id="savingsDollarLabel">You Save</span><span class="val" id="outSavingsDollar">$0.00</span></div>
+    <div class="savings-row" id="savingsPctRow"><span class="label" id="savingsPctLabel">Discount</span><span class="val" id="outSavingsPct">0%</span></div>
+  </div>
+</div>
+
+<script>
+  const bidEl = document.getElementById('bid');
+  const retailEl = document.getElementById('retail');
+  const taxSelectEl = document.getElementById('taxSelect');
+  const customTaxEl = document.getElementById('customTax');
+  const LOT_FEE = 3.00;
+  const PREMIUM_RATE = 0.15;
+
+  function fmt(n) {
+    return '$' + n.toFixed(2);
+  }
+
+  function getTaxRate() {
+    if (taxSelectEl.value === 'custom') {
+      return (parseFloat(customTaxEl.value) || 0) / 100;
+    }
+    return parseFloat(taxSelectEl.value) / 100;
+  }
+
+  function calculate() {
+    const bid = parseFloat(bidEl.value) || 0;
+    const retail = parseFloat(retailEl.value) || 0;
+    const taxRate = getTaxRate();
+    const premium = bid * PREMIUM_RATE;
+    const subtotal = bid + premium + LOT_FEE;
+    const tax = subtotal * taxRate;
+    const total = subtotal + tax;
+
+    document.getElementById('outBid').textContent = fmt(bid);
+    document.getElementById('outPremium').textContent = fmt(premium);
+    document.getElementById('outLot').textContent = fmt(LOT_FEE);
+    document.getElementById('outSubtotal').textContent = fmt(subtotal);
+    document.getElementById('taxLabel').textContent = (taxRate * 100).toFixed(1).replace(/\.0$/, '');
+    document.getElementById('outTax').textContent = fmt(tax);
+    document.getElementById('outTotal').textContent = fmt(total);
+
+    const note = document.getElementById('markupNote');
+    if (bid > 0) {
+      const markup = ((total - bid) / bid * 100).toFixed(1);
+      note.innerHTML = 'You pay <span>' + markup + '% more</span> than your bid';
+    } else {
+      note.innerHTML = '';
+    }
+
+    const savingsSection = document.getElementById('savingsSection');
+    if (retail > 0 && bid > 0) {
+      savingsSection.classList.add('show');
+      const diff = retail - total;
+      const pct = (diff / retail * 100);
+      document.getElementById('outRetail').textContent = fmt(retail);
+
+      const dollarRow = document.getElementById('savingsDollarRow');
+      const pctRow = document.getElementById('savingsPctRow');
+
+      if (diff >= 0) {
+        document.getElementById('savingsDollarLabel').textContent = 'You Save';
+        document.getElementById('outSavingsDollar').textContent = fmt(diff);
+        dollarRow.className = 'savings-row good';
+        document.getElementById('savingsPctLabel').textContent = 'Discount';
+        document.getElementById('outSavingsPct').textContent = pct.toFixed(1) + '% off';
+        pctRow.className = 'savings-row good';
+      } else {
+        document.getElementById('savingsDollarLabel').textContent = 'You Overpay';
+        document.getElementById('outSavingsDollar').textContent = fmt(Math.abs(diff));
+        dollarRow.className = 'savings-row bad';
+        document.getElementById('savingsPctLabel').textContent = 'Over Retail';
+        document.getElementById('outSavingsPct').textContent = Math.abs(pct).toFixed(1) + '% more';
+        pctRow.className = 'savings-row bad';
+      }
+    } else {
+      savingsSection.classList.remove('show');
+    }
+  }
+
+  taxSelectEl.addEventListener('change', function() {
+    customTaxEl.classList.toggle('show', this.value === 'custom');
+    if (this.value === 'custom') customTaxEl.focus();
+    calculate();
+  });
+
+  ['input', 'change', 'keyup', 'blur'].forEach(function(evt) {
+    bidEl.addEventListener(evt, calculate);
+    retailEl.addEventListener(evt, calculate);
+    customTaxEl.addEventListener(evt, calculate);
+  });
+  calculate();
+</script>
+</body>
+</html>
