@@ -127,6 +127,21 @@
     margin-bottom: 0;
     cursor: pointer;
   }
+  .default-btn {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 8px;
+    border: 1px solid #333;
+    border-radius: 6px;
+    background: transparent;
+    color: #666;
+    font-size: .75rem;
+    cursor: pointer;
+    transition: border-color .2s, color .2s;
+  }
+  .default-btn:hover, .default-btn:active { border-color: #FFB81C; color: #FFB81C; }
+  .default-btn.saved { border-color: #34d399; color: #34d399; }
   .clear-btn {
     display: block;
     width: 100%;
@@ -204,33 +219,68 @@
   </div>
 
   <div class="input-group">
-    <label for="taxSelect">Sales Tax Rate</label>
+    <label for="taxSelect">Location</label>
     <select id="taxSelect">
-      <optgroup label="Pennsylvania &mdash; Allegheny Co. (7%)">
-        <option value="7">McKees Rocks</option>
-        <option value="7">Robinson</option>
-        <option value="7">Pittsburgh Mills (Tarentum)</option>
-        <option value="7">Monroeville</option>
+      <optgroup label="Arizona">
+        <option value="8.3" data-loc="mesa-az">Mesa &mdash; 8.30%</option>
+        <option value="9.1" data-loc="phoenix-az">Phoenix &mdash; 9.10%</option>
       </optgroup>
-      <optgroup label="Pennsylvania &mdash; Other Counties (6%)">
-        <option value="6">Beaver Falls (Beaver Co.)</option>
-        <option value="6" selected>Butler (Butler Co.)</option>
-        <option value="6">Washington (Washington Co.)</option>
-        <option value="6">Washington Big Box (Washington Co.)</option>
-        <option value="6">Uniontown (Fayette Co.)</option>
+      <optgroup label="Colorado">
+        <option value="8.2" data-loc="cosprings-co">Colorado Springs &mdash; 8.20%</option>
+      </optgroup>
+      <optgroup label="Georgia">
+        <option value="8" data-loc="macon-ga">Macon &mdash; 8.00%</option>
+      </optgroup>
+      <optgroup label="Iowa">
+        <option value="7" data-loc="davenport-ia">Davenport &mdash; 7.00%</option>
+      </optgroup>
+      <optgroup label="Nevada">
+        <option value="8.375" data-loc="henderson-nv">Henderson &mdash; 8.375%</option>
+        <option value="8.375" data-loc="nlv-nv">North Las Vegas &mdash; 8.375%</option>
+      </optgroup>
+      <optgroup label="North Carolina">
+        <option value="7" data-loc="gastonia-nc">Gastonia &mdash; 7.00%</option>
       </optgroup>
       <optgroup label="Ohio">
-        <option value="6.5">Canton (Stark Co.) &mdash; 6.50%</option>
-        <option value="6.5">Hamilton (Butler Co.) &mdash; 6.50%</option>
-        <option value="6.75">Akron (Summit Co.) &mdash; 6.75%</option>
-        <option value="6.75">Warren (Trumbull Co.) &mdash; 6.75%</option>
-        <option value="7.5">Boardman (Mahoning Co.) &mdash; 7.50%</option>
+        <option value="6.5" data-loc="canton-oh">Canton &mdash; 6.50%</option>
+        <option value="6.5" data-loc="hamilton-oh">Hamilton &mdash; 6.50%</option>
+        <option value="6.75" data-loc="akron-oh">Akron &mdash; 6.75%</option>
+        <option value="6.75" data-loc="warren-oh">Warren &mdash; 6.75%</option>
+        <option value="7.5" data-loc="boardman-oh">Boardman &mdash; 7.50%</option>
+      </optgroup>
+      <optgroup label="Pennsylvania &mdash; Allegheny Co. (7%)">
+        <option value="7" data-loc="mckees-pa">McKees Rocks</option>
+        <option value="7" data-loc="robinson-pa">Robinson</option>
+        <option value="7" data-loc="pittsburgh-mills-pa">Pittsburgh Mills (Tarentum)</option>
+        <option value="7" data-loc="monroeville-pa">Monroeville</option>
+      </optgroup>
+      <optgroup label="Pennsylvania &mdash; Other Counties (6%)">
+        <option value="6" data-loc="beaver-pa">Beaver Falls</option>
+        <option value="6" data-loc="butler-pa">Butler</option>
+        <option value="6" data-loc="washington-pa">Washington</option>
+        <option value="6" data-loc="washington-bb-pa">Washington Big Box</option>
+        <option value="6" data-loc="uniontown-pa">Uniontown</option>
+      </optgroup>
+      <optgroup label="South Carolina">
+        <option value="7" data-loc="anderson-sc">Anderson &mdash; 7.00%</option>
+        <option value="8" data-loc="cowpens-sc">Cowpens &mdash; 8.00%</option>
+        <option value="7" data-loc="greenville-sc">Greenville &mdash; 7.00%</option>
+        <option value="7" data-loc="rockhill-sc">Rock Hill &mdash; 7.00%</option>
+      </optgroup>
+      <optgroup label="Tennessee">
+        <option value="9.75" data-loc="jackson-tn">Jackson &mdash; 9.75%</option>
+      </optgroup>
+      <optgroup label="Texas">
+        <option value="8.25" data-loc="schertz-tx">Schertz (San Antonio) &mdash; 8.25%</option>
+        <option value="8.25" data-loc="sanantonio-tx">San Antonio &mdash; 8.25%</option>
+        <option value="8.25" data-loc="elpaso-tx">El Paso &mdash; 8.25%</option>
       </optgroup>
       <optgroup label="Other">
-        <option value="custom">Custom...</option>
+        <option value="custom" data-loc="custom">Custom...</option>
       </optgroup>
     </select>
     <input type="text" inputmode="decimal" id="customTax" class="custom-tax" placeholder="Enter tax %">
+    <button class="default-btn" id="setDefaultBtn">Set as my default location</button>
   </div>
 
   <div class="breakdown">
@@ -352,9 +402,49 @@
     }
   }
 
+  var defaultBtn = document.getElementById('setDefaultBtn');
+  var DEFAULT_LOC = 'butler-pa';
+
+  function getDefaultLoc() {
+    try { return localStorage.getItem('macbid-default-loc') || DEFAULT_LOC; } catch(e) { return DEFAULT_LOC; }
+  }
+
+  function setLocationByLoc(loc) {
+    var opts = taxSelectEl.options;
+    for (var i = 0; i < opts.length; i++) {
+      if (opts[i].getAttribute('data-loc') === loc) {
+        taxSelectEl.selectedIndex = i;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function updateDefaultBtn() {
+    var current = taxSelectEl.options[taxSelectEl.selectedIndex];
+    var loc = current ? current.getAttribute('data-loc') : '';
+    var saved = getDefaultLoc();
+    if (loc === saved) {
+      defaultBtn.textContent = 'This is your default location';
+      defaultBtn.classList.add('saved');
+    } else {
+      defaultBtn.textContent = 'Set as my default location';
+      defaultBtn.classList.remove('saved');
+    }
+  }
+
+  defaultBtn.addEventListener('click', function() {
+    var current = taxSelectEl.options[taxSelectEl.selectedIndex];
+    if (current) {
+      try { localStorage.setItem('macbid-default-loc', current.getAttribute('data-loc')); } catch(e) {}
+      updateDefaultBtn();
+    }
+  });
+
   taxSelectEl.addEventListener('change', function() {
     customTaxEl.classList.toggle('show', this.value === 'custom');
     if (this.value === 'custom') customTaxEl.focus();
+    updateDefaultBtn();
     calculate();
   });
 
@@ -363,9 +453,10 @@
     retailEl.value = '';
     macbucksEl.value = '';
     transferEl.checked = false;
-    taxSelectEl.selectedIndex = 5;
+    setLocationByLoc(getDefaultLoc());
     customTaxEl.value = '';
     customTaxEl.classList.remove('show');
+    updateDefaultBtn();
     calculate();
     bidEl.focus();
   });
@@ -377,6 +468,10 @@
     macbucksEl.addEventListener(evt, calculate);
     customTaxEl.addEventListener(evt, calculate);
   });
+
+  // On page load: set saved default location
+  setLocationByLoc(getDefaultLoc());
+  updateDefaultBtn();
   calculate();
 </script>
 </body>
