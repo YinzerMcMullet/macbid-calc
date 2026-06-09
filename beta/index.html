@@ -506,7 +506,7 @@
   <!-- tip jar goes here (Phase 3d, pending accounts from Justin) -->
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.0-beta.1</div>
+  <div class="version">v2.0-beta.2</div>
 </div>
 
 <script>
@@ -521,6 +521,7 @@
   const PREMIUM_RATE = 0.15;
 
   var mode = 'pay'; // 'pay' = forward, 'bid' = reverse (max budget -> max bid)
+  var modeValues = { pay: '', bid: '' }; // each tab remembers its own number
 
   function fmt(n) {
     return '$' + n.toFixed(2);
@@ -551,6 +552,7 @@
   }
 
   function calculate() {
+    modeValues[mode] = bidEl.value;
     const entered = parseFloat(bidEl.value) || 0;
     const retail = parseFloat(retailEl.value) || 0;
     const mb = parseFloat(macbucksEl.value) || 0;
@@ -670,6 +672,7 @@
   // ---- mode tabs ----
   function setMode(m) {
     mode = m;
+    bidEl.value = modeValues[m];
     document.getElementById('tabPay').classList.toggle('active', m === 'pay');
     document.getElementById('tabBid').classList.toggle('active', m === 'bid');
     document.getElementById('bidLabel').textContent = m === 'pay' ? 'Your Bid Amount' : 'Your Max Budget (out the door)';
@@ -805,6 +808,7 @@
 
   // ---- clear ----
   document.getElementById('clearBtn').addEventListener('click', function() {
+    modeValues = { pay: '', bid: '' };
     bidEl.value = '';
     retailEl.value = '';
     macbucksEl.value = '';
@@ -833,6 +837,7 @@
   // ---- page load: URL params win over saved default ----
   (function init() {
     var p = new URLSearchParams(location.search);
+    var targetMode = p.get('m') === 'bid' ? 'bid' : 'pay';
     var hasParams = false;
     p.forEach(function() { hasParams = true; });
 
@@ -845,7 +850,7 @@
       } else if (!loc || !setLocationByLoc(loc)) {
         setLocationByLoc(getDefaultLoc());
       }
-      if (p.get('b')) bidEl.value = p.get('b');
+      if (p.get('b')) modeValues[targetMode] = p.get('b');
       if (p.get('a')) assuranceEl.value = p.get('a');
       if (p.get('mb')) macbucksEl.value = p.get('mb');
       if (p.get('tf') === '1') transferEl.checked = true;
@@ -856,7 +861,7 @@
     }
 
     updateDefaultBtn();
-    setMode(p.get('m') === 'bid' ? 'bid' : 'pay');
+    setMode(targetMode);
   })();
 
   // ---- PWA: offline + add to home screen ----
