@@ -273,9 +273,12 @@
     }
 
     const note = document.getElementById('markupNote');
-    if (bid > 0) {
+    if (bid > 0 && total > bid) {
       const markup = ((total - bid) / bid * 100).toFixed(1);
-      note.innerHTML = 'You pay <span>' + markup + '% more</span> than your bid';
+      note.innerHTML = 'You pay <span style="color:#ff6b6b">' + markup + '% more</span> than your bid';
+    } else if (bid > 0 && total < bid) {
+      const savings = ((bid - total) / bid * 100).toFixed(1);
+      note.innerHTML = 'You pay <span style="color:#34d399">' + savings + '% less</span> than your bid';
     } else {
       note.innerHTML = '';
     }
