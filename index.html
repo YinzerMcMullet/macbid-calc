@@ -206,8 +206,11 @@
     <div class="row"><span class="label">Lot Fee</span><span id="outLot">$0.00</span></div>
     <div class="row subtotal"><span class="label">Subtotal</span><span id="outSubtotal">$0.00</span></div>
     <div class="row"><span class="label">Sales Tax (<span id="taxLabel">6</span>%)</span><span id="outTax">$0.00</span></div>
-    <div class="row macbucks-row" id="macbucksRow" style="display:none"><span class="label">Mac Bucks</span><span id="outMacbucks" style="color:#34d399">-$0.00</span></div>
-    <div class="row total"><span class="label">You Pay</span><span id="outTotal">$0.00</span></div>
+    <div class="row total"><span class="label">Total</span><span id="outTotal">$0.00</span></div>
+    <div class="macbucks-section" id="macbucksSection" style="display:none">
+      <div class="row" style="margin-top:4px"><span class="label">Mac Bucks</span><span id="outMacbucks" style="color:#34d399">-$0.00</span></div>
+      <div class="row total" style="border-color:#34d399"><span class="label" style="color:#34d399">You Pay</span><span id="outFinal" style="color:#34d399">$0.00</span></div>
+    </div>
   </div>
 
   <div class="markup-note" id="markupNote"></div>
@@ -258,14 +261,16 @@
     document.getElementById('outSubtotal').textContent = fmt(subtotal);
     document.getElementById('taxLabel').textContent = (taxRate * 100).toFixed(1).replace(/\.0$/, '');
     document.getElementById('outTax').textContent = fmt(tax);
-    var mbRow = document.getElementById('macbucksRow');
+    var totalBeforeMb = subtotal + tax;
+    document.getElementById('outTotal').textContent = fmt(totalBeforeMb);
+    var mbSection = document.getElementById('macbucksSection');
     if (mb > 0) {
-      mbRow.style.display = '';
+      mbSection.style.display = '';
       document.getElementById('outMacbucks').textContent = '-' + fmt(mb);
+      document.getElementById('outFinal').textContent = fmt(total);
     } else {
-      mbRow.style.display = 'none';
+      mbSection.style.display = 'none';
     }
-    document.getElementById('outTotal').textContent = fmt(total);
 
     const note = document.getElementById('markupNote');
     if (bid > 0) {
