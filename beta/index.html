@@ -506,7 +506,7 @@
   <!-- tip jar goes here (Phase 3d, pending accounts from Justin) -->
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.0-beta.2</div>
+  <div class="version">v2.0-beta.3</div>
 </div>
 
 <script>
@@ -564,11 +564,11 @@
     var budgetShort = false;
 
     if (mode === 'bid') {
-      // Reverse: Budget = (Bid*1.15 + LotFee + Assurance + Transfer) * (1+tax) - MacBucks
-      // Solve for Bid, then round DOWN to a whole dollar so it never overshoots.
+      // Reverse: Budget = (Bid*1.15 + LotFee + Transfer) * (1+tax) + Assurance - MacBucks
+      // (assurance is not taxed). Solve for Bid, round DOWN to a whole dollar so it never overshoots.
       const budget = entered;
-      const subAllowed = (budget + mb) / (1 + taxRate);
-      const rawBid = (subAllowed - LOT_FEE - assurance - transfer) / (1 + PREMIUM_RATE);
+      const taxableAllowed = (budget + mb - assurance) / (1 + taxRate);
+      const rawBid = (taxableAllowed - LOT_FEE - transfer) / (1 + PREMIUM_RATE);
       bid = Math.floor(rawBid);
       if (budget <= 0) {
         bid = 0;
@@ -580,7 +580,8 @@
 
     const premium = bid * PREMIUM_RATE;
     const subtotal = bid + premium + LOT_FEE + assurance + transfer;
-    const tax = subtotal * taxRate;
+    // MacBid does not tax Buyer Assurance (verified against real invoices, 2026-06-09)
+    const tax = (subtotal - assurance) * taxRate;
     const totalBeforeMb = subtotal + tax;
     const total = Math.max(0, totalBeforeMb - mb);
 
@@ -613,7 +614,7 @@
         maxBidSub.className = 'maxbid-sub short';
       } else if (bid > 0) {
         maxBidVal.textContent = '$' + bid;
-        var spare = entered - total;
+        var spare = entered - Math.round(total * 100) / 100;
         maxBidSub.textContent = 'Out the door: ' + fmt(total) + ' — ' + fmt(Math.max(0, spare)) + ' under your budget';
         maxBidSub.className = 'maxbid-sub';
       } else {
@@ -639,7 +640,8 @@
     const savingsSection = document.getElementById('savingsSection');
     if (retail > 0 && bid > 0) {
       savingsSection.classList.add('show');
-      const compareTotal = mb > 0 ? total : totalBeforeMb;
+      // Compare against the rounded total — the amount MacBid actually charges
+      const compareTotal = Math.round((mb > 0 ? total : totalBeforeMb) * 100) / 100;
       const diff = retail - compareTotal;
       const pct = (diff / retail * 100);
       document.getElementById('outRetail').textContent = fmt(retail);
