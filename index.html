@@ -108,6 +108,20 @@
     color: #999;
   }
   .markup-note span { color: #ff6b6b; font-weight: 600; }
+  .clear-btn {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    background: #1a1a1a;
+    color: #999;
+    font-size: .9rem;
+    cursor: pointer;
+    transition: border-color .2s, color .2s;
+  }
+  .clear-btn:hover, .clear-btn:active { border-color: #FFB81C; color: #FFB81C; }
   .savings {
     margin-top: 16px;
     border-top: 1px solid #333;
@@ -190,6 +204,8 @@
   </div>
 
   <div class="markup-note" id="markupNote"></div>
+
+  <button class="clear-btn" id="clearBtn">Clear</button>
 
   <div class="savings" id="savingsSection">
     <div class="savings-header">vs. Retail</div>
@@ -277,6 +293,16 @@
     customTaxEl.classList.toggle('show', this.value === 'custom');
     if (this.value === 'custom') customTaxEl.focus();
     calculate();
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', function() {
+    bidEl.value = '';
+    retailEl.value = '';
+    taxSelectEl.selectedIndex = 0;
+    customTaxEl.value = '';
+    customTaxEl.classList.remove('show');
+    calculate();
+    bidEl.focus();
   });
 
   ['input', 'change', 'keyup', 'blur'].forEach(function(evt) {
