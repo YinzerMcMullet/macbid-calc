@@ -506,6 +506,12 @@
       <div class="hint">Applied after tax</div>
     </div>
 
+    <div class="checkbox-group">
+      <input type="checkbox" id="carryToggle">
+      <label for="carryToggle">Keep the same number when switching tabs</label>
+      <div class="hint">Off = each tab remembers its own number</div>
+    </div>
+
     <div class="advanced-label">Advanced &mdash; fee rates</div>
     <div class="rate-row">
       <div class="input-group">
@@ -570,7 +576,7 @@
   <!-- tip jar goes here (Phase 3d, pending accounts from Justin) -->
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.1-beta.1</div>
+  <div class="version">v2.1-beta.2</div>
 </div>
 
 <script>
@@ -583,6 +589,7 @@
   const customTaxEl = document.getElementById('customTax');
   const premiumRateEl = document.getElementById('premiumRate');
   const lotFeeEl = document.getElementById('lotFee');
+  const carryEl = document.getElementById('carryToggle');
   // Mac.bid standard rates — the verified defaults. Advanced override is session-only by design.
   const DEFAULT_PREMIUM = 0.15;
   const DEFAULT_LOT_FEE = 3.00;
@@ -773,6 +780,7 @@
 
   // ---- mode tabs ----
   function setMode(m) {
+    if (carryEl.checked) modeValues[m] = bidEl.value; // carry-over mode: the number follows you
     mode = m;
     bidEl.value = modeValues[m];
     document.getElementById('tabPay').classList.toggle('active', m === 'pay');
@@ -801,6 +809,15 @@
   try {
     if (localStorage.getItem('macbid-more-open') === '1') openMoreOptions(true, false);
   } catch (e) {}
+
+  // ---- carry-over preference ----
+  try {
+    if (localStorage.getItem('macbid-carry') === '1') carryEl.checked = true;
+  } catch (e) {}
+  carryEl.addEventListener('change', function() {
+    try { localStorage.setItem('macbid-carry', carryEl.checked ? '1' : '0'); } catch (e) {}
+    calculate();
+  });
 
   // ---- default location ----
   var defaultBtn = document.getElementById('setDefaultBtn');
@@ -920,9 +937,8 @@
     transferEl.checked = false;
     premiumRateEl.value = '';
     lotFeeEl.value = '';
-    setLocationByLoc(getDefaultLoc());
-    customTaxEl.value = '';
-    customTaxEl.classList.remove('show');
+    // Location and its custom tax survive Clear — "next item, same warehouse".
+    // A fresh page load still applies the saved default location.
     if (location.search) {
       try { history.replaceState(null, '', location.pathname); } catch (e) {}
     }
@@ -977,6 +993,7 @@
     }
 
     updateDefaultBtn();
+    bidEl.value = modeValues[targetMode]; // seed before setMode so carry-over can't stomp URL params
     setMode(targetMode);
   })();
 
