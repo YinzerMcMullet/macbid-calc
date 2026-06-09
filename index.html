@@ -165,6 +165,12 @@
   </div>
 
   <div class="input-group">
+    <label for="macbucks">Mac Bucks (optional)</label>
+    <span class="dollar">$</span>
+    <input type="text" inputmode="decimal" id="macbucks" class="dollar-input" placeholder="0.00">
+  </div>
+
+  <div class="input-group">
     <label for="taxSelect">Sales Tax Rate</label>
     <select id="taxSelect">
       <optgroup label="Pennsylvania &mdash; Allegheny Co. (7%)">
@@ -200,6 +206,7 @@
     <div class="row"><span class="label">Lot Fee</span><span id="outLot">$0.00</span></div>
     <div class="row subtotal"><span class="label">Subtotal</span><span id="outSubtotal">$0.00</span></div>
     <div class="row"><span class="label">Sales Tax (<span id="taxLabel">6</span>%)</span><span id="outTax">$0.00</span></div>
+    <div class="row macbucks-row" id="macbucksRow" style="display:none"><span class="label">Mac Bucks</span><span id="outMacbucks" style="color:#34d399">-$0.00</span></div>
     <div class="row total"><span class="label">You Pay</span><span id="outTotal">$0.00</span></div>
   </div>
 
@@ -218,6 +225,7 @@
 <script>
   const bidEl = document.getElementById('bid');
   const retailEl = document.getElementById('retail');
+  const macbucksEl = document.getElementById('macbucks');
   const taxSelectEl = document.getElementById('taxSelect');
   const customTaxEl = document.getElementById('customTax');
   const LOT_FEE = 3.00;
@@ -237,11 +245,12 @@
   function calculate() {
     const bid = parseFloat(bidEl.value) || 0;
     const retail = parseFloat(retailEl.value) || 0;
+    const mb = parseFloat(macbucksEl.value) || 0;
     const taxRate = getTaxRate();
     const premium = bid * PREMIUM_RATE;
     const subtotal = bid + premium + LOT_FEE;
     const tax = subtotal * taxRate;
-    const total = subtotal + tax;
+    const total = Math.max(0, subtotal + tax - mb);
 
     document.getElementById('outBid').textContent = fmt(bid);
     document.getElementById('outPremium').textContent = fmt(premium);
@@ -249,6 +258,13 @@
     document.getElementById('outSubtotal').textContent = fmt(subtotal);
     document.getElementById('taxLabel').textContent = (taxRate * 100).toFixed(1).replace(/\.0$/, '');
     document.getElementById('outTax').textContent = fmt(tax);
+    var mbRow = document.getElementById('macbucksRow');
+    if (mb > 0) {
+      mbRow.style.display = '';
+      document.getElementById('outMacbucks').textContent = '-' + fmt(mb);
+    } else {
+      mbRow.style.display = 'none';
+    }
     document.getElementById('outTotal').textContent = fmt(total);
 
     const note = document.getElementById('markupNote');
@@ -298,6 +314,7 @@
   document.getElementById('clearBtn').addEventListener('click', function() {
     bidEl.value = '';
     retailEl.value = '';
+    macbucksEl.value = '';
     taxSelectEl.selectedIndex = 0;
     customTaxEl.value = '';
     customTaxEl.classList.remove('show');
@@ -308,6 +325,7 @@
   ['input', 'change', 'keyup', 'blur'].forEach(function(evt) {
     bidEl.addEventListener(evt, calculate);
     retailEl.addEventListener(evt, calculate);
+    macbucksEl.addEventListener(evt, calculate);
     customTaxEl.addEventListener(evt, calculate);
   });
   calculate();
