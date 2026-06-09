@@ -146,6 +146,18 @@
     cursor: pointer;
   }
   .reset-rates.show { display: block; }
+  .carry-chip {
+    display: none;
+    margin-top: 8px;
+    padding: 5px 12px;
+    background: none;
+    border: 1px dashed rgba(255,184,28,.45);
+    border-radius: 14px;
+    color: #FFB81C;
+    font-size: .75rem;
+    cursor: pointer;
+  }
+  .carry-chip.show { display: inline-block; }
   .trust {
     text-align: center;
     margin-top: 18px;
@@ -413,6 +425,7 @@
     <label for="bid" id="bidLabel">Your Bid Amount</label>
     <span class="dollar">$</span>
     <input type="text" inputmode="decimal" id="bid" class="dollar-input" placeholder="0.00" autofocus>
+    <button class="carry-chip" id="carryChip" type="button"></button>
   </div>
 
   <div class="input-group">
@@ -576,7 +589,7 @@
   <!-- tip jar goes here (Phase 3d, pending accounts from Justin) -->
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.1-beta.2</div>
+  <div class="version">v2.1-beta.3</div>
 </div>
 
 <script>
@@ -775,6 +788,17 @@
     document.getElementById('emptyState').style.display = (mode === 'pay' && !showBreakdown) ? '' : 'none';
     document.getElementById('resultsHeader').style.display = (mode === 'pay' && !showBreakdown) ? 'none' : '';
 
+    // One-tap carry chip: offer the other tab's number when this tab is empty (and carry-over is off)
+    var otherMode = mode === 'pay' ? 'bid' : 'pay';
+    var otherVal = (modeValues[otherMode] || '').trim();
+    var chip = document.getElementById('carryChip');
+    if (!carryEl.checked && bidEl.value.trim() === '' && (parseFloat(otherVal) || 0) > 0) {
+      chip.textContent = 'Use $' + otherVal + ' here?';
+      chip.classList.add('show');
+    } else {
+      chip.classList.remove('show');
+    }
+
     maybeFlash(mode + '|' + fmt(totalBeforeMb) + '|' + fmt(total) + '|' + bid);
   }
 
@@ -962,6 +986,13 @@
     premiumRateEl.value = '';
     lotFeeEl.value = '';
     calculate();
+  });
+
+  document.getElementById('carryChip').addEventListener('click', function() {
+    var otherMode = mode === 'pay' ? 'bid' : 'pay';
+    bidEl.value = modeValues[otherMode] || '';
+    calculate();
+    bidEl.focus();
   });
 
   // ---- page load: URL params win over saved default ----
