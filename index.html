@@ -108,6 +108,23 @@
     color: #999;
   }
   .markup-note span { color: #ff6b6b; font-weight: 600; }
+  .checkbox-group {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .checkbox-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #FFB81C;
+    cursor: pointer;
+  }
+  .checkbox-group label {
+    display: inline;
+    margin-bottom: 0;
+    cursor: pointer;
+  }
   .clear-btn {
     display: block;
     width: 100%;
@@ -170,6 +187,11 @@
     <input type="text" inputmode="decimal" id="macbucks" class="dollar-input" placeholder="0.00">
   </div>
 
+  <div class="checkbox-group">
+    <input type="checkbox" id="transferFee">
+    <label for="transferFee">Transfer Fee ($10)</label>
+  </div>
+
   <div class="input-group">
     <label for="taxSelect">Sales Tax Rate</label>
     <select id="taxSelect">
@@ -181,7 +203,7 @@
       </optgroup>
       <optgroup label="Pennsylvania &mdash; Other Counties (6%)">
         <option value="6">Beaver Falls (Beaver Co.)</option>
-        <option value="6">Butler (Butler Co.)</option>
+        <option value="6" selected>Butler (Butler Co.)</option>
         <option value="6">Washington (Washington Co.)</option>
         <option value="6">Washington Big Box (Washington Co.)</option>
         <option value="6">Uniontown (Fayette Co.)</option>
@@ -204,6 +226,7 @@
     <div class="row"><span class="label">Winning Bid</span><span id="outBid">$0.00</span></div>
     <div class="row"><span class="label">Buyer's Premium (15%)</span><span id="outPremium">$0.00</span></div>
     <div class="row"><span class="label">Lot Fee</span><span id="outLot">$0.00</span></div>
+    <div class="row" id="transferRow" style="display:none"><span class="label">Transfer Fee</span><span id="outTransfer">$10.00</span></div>
     <div class="row subtotal"><span class="label">Subtotal</span><span id="outSubtotal">$0.00</span></div>
     <div class="row"><span class="label">Sales Tax (<span id="taxLabel">6</span>%)</span><span id="outTax">$0.00</span></div>
     <div class="row total"><span class="label">Total</span><span id="outTotal">$0.00</span></div>
@@ -229,6 +252,7 @@
   const bidEl = document.getElementById('bid');
   const retailEl = document.getElementById('retail');
   const macbucksEl = document.getElementById('macbucks');
+  const transferEl = document.getElementById('transferFee');
   const taxSelectEl = document.getElementById('taxSelect');
   const customTaxEl = document.getElementById('customTax');
   const LOT_FEE = 3.00;
@@ -250,14 +274,16 @@
     const retail = parseFloat(retailEl.value) || 0;
     const mb = parseFloat(macbucksEl.value) || 0;
     const taxRate = getTaxRate();
+    const transfer = transferEl.checked ? 10 : 0;
     const premium = bid * PREMIUM_RATE;
-    const subtotal = bid + premium + LOT_FEE;
+    const subtotal = bid + premium + LOT_FEE + transfer;
     const tax = subtotal * taxRate;
     const total = Math.max(0, subtotal + tax - mb);
 
     document.getElementById('outBid').textContent = fmt(bid);
     document.getElementById('outPremium').textContent = fmt(premium);
     document.getElementById('outLot').textContent = fmt(LOT_FEE);
+    document.getElementById('transferRow').style.display = transfer ? '' : 'none';
     document.getElementById('outSubtotal').textContent = fmt(subtotal);
     document.getElementById('taxLabel').textContent = (taxRate * 100).toFixed(1).replace(/\.0$/, '');
     document.getElementById('outTax').textContent = fmt(tax);
@@ -323,13 +349,15 @@
     bidEl.value = '';
     retailEl.value = '';
     macbucksEl.value = '';
-    taxSelectEl.selectedIndex = 0;
+    transferEl.checked = false;
+    taxSelectEl.selectedIndex = 5;
     customTaxEl.value = '';
     customTaxEl.classList.remove('show');
     calculate();
     bidEl.focus();
   });
 
+  transferEl.addEventListener('change', calculate);
   ['input', 'change', 'keyup', 'blur'].forEach(function(evt) {
     bidEl.addEventListener(evt, calculate);
     retailEl.addEventListener(evt, calculate);
