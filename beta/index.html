@@ -122,6 +122,53 @@
     color: #555;
     margin-top: 5px;
   }
+  .advanced-label {
+    font-size: .7rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 4px 0 12px;
+    border-top: 1px solid #2a2a2a;
+    padding-top: 12px;
+  }
+  .rate-row { display: flex; gap: 10px; }
+  .rate-row .input-group { flex: 1; margin-bottom: 12px; }
+  .reset-rates {
+    display: none;
+    width: 100%;
+    margin: 0 0 14px;
+    padding: 7px;
+    background: none;
+    border: 1px dashed rgba(255,184,28,.45);
+    border-radius: 6px;
+    color: #FFB81C;
+    font-size: .7rem;
+    cursor: pointer;
+  }
+  .reset-rates.show { display: block; }
+  .trust {
+    text-align: center;
+    margin-top: 18px;
+    font-size: .68rem;
+    color: #777;
+    line-height: 1.5;
+  }
+  .trust .check { color: #34d399; }
+  .trust.custom { color: #FFB81C; }
+  .empty-state {
+    text-align: center;
+    padding: 28px 12px;
+    margin-top: 8px;
+    background: #1c1c1c;
+    border-radius: 10px;
+    color: #777;
+    font-size: .9rem;
+  }
+  .row .tag {
+    font-size: .65rem;
+    color: #555;
+    margin-left: 6px;
+  }
   .more-toggle {
     display: flex;
     justify-content: space-between;
@@ -458,6 +505,19 @@
       <input type="text" inputmode="decimal" id="macbucks" class="dollar-input" placeholder="0.00">
       <div class="hint">Applied after tax</div>
     </div>
+
+    <div class="advanced-label">Advanced &mdash; fee rates</div>
+    <div class="rate-row">
+      <div class="input-group">
+        <label for="premiumRate">Buyer's Premium (%)</label>
+        <input type="text" inputmode="decimal" id="premiumRate" placeholder="15">
+      </div>
+      <div class="input-group">
+        <label for="lotFee">Lot Fee ($)</label>
+        <input type="text" inputmode="decimal" id="lotFee" placeholder="3.00">
+      </div>
+    </div>
+    <button class="reset-rates" id="resetRates" type="button">Reset to Mac.bid standard (15% + $3)</button>
   </div>
 
   <div class="input-group">
@@ -474,11 +534,13 @@
     <div class="maxbid-sub" id="maxBidSub"></div>
   </div>
 
+  <div class="empty-state" id="emptyState" style="display:none">Enter your bid to see your true cost</div>
+
   <div class="breakdown">
     <div class="row"><span class="label">Winning Bid</span><span id="outBid">$0.00</span></div>
-    <div class="row"><span class="label">Buyer's Premium (15%)</span><span id="outPremium">$0.00</span></div>
+    <div class="row"><span class="label">Buyer's Premium (<span id="premiumLabel">15</span>%)</span><span id="outPremium">$0.00</span></div>
     <div class="row"><span class="label">Lot Fee</span><span id="outLot">$0.00</span></div>
-    <div class="row" id="assuranceRow" style="display:none"><span class="label">Buyers Assurance</span><span id="outAssurance">$0.00</span></div>
+    <div class="row" id="assuranceRow" style="display:none"><span class="label">Buyers Assurance<span class="tag">not taxed</span></span><span id="outAssurance">$0.00</span></div>
     <div class="row" id="transferRow" style="display:none"><span class="label">Transfer Fee</span><span id="outTransfer">$10.00</span></div>
     <div class="row subtotal"><span class="label">Subtotal</span><span id="outSubtotal">$0.00</span></div>
     <div class="row"><span class="label">Sales Tax (<span id="taxLabel">6</span>%)</span><span id="outTax">$0.00</span></div>
@@ -503,10 +565,12 @@
     <div class="savings-row" id="savingsPctRow"><span class="label" id="savingsPctLabel">Discount</span><span class="val" id="outSavingsPct">0%</span></div>
   </div>
 
+  <div class="trust" id="trustStrip"><span class="check">&#10003;</span> Fee math verified against real Mac.bid invoices &middot; Rates checked June 2026</div>
+
   <!-- tip jar goes here (Phase 3d, pending accounts from Justin) -->
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.0-beta.3</div>
+  <div class="version">v2.1-beta.1</div>
 </div>
 
 <script>
@@ -517,8 +581,25 @@
   const transferEl = document.getElementById('transferFee');
   const taxSelectEl = document.getElementById('taxSelect');
   const customTaxEl = document.getElementById('customTax');
-  const LOT_FEE = 3.00;
-  const PREMIUM_RATE = 0.15;
+  const premiumRateEl = document.getElementById('premiumRate');
+  const lotFeeEl = document.getElementById('lotFee');
+  // Mac.bid standard rates — the verified defaults. Advanced override is session-only by design.
+  const DEFAULT_PREMIUM = 0.15;
+  const DEFAULT_LOT_FEE = 3.00;
+
+  function getPremiumRate() {
+    var v = parseFloat(premiumRateEl.value);
+    if (isNaN(v)) return DEFAULT_PREMIUM;
+    return Math.min(100, Math.max(0, v)) / 100;
+  }
+  function getLotFee() {
+    var v = parseFloat(lotFeeEl.value);
+    if (isNaN(v)) return DEFAULT_LOT_FEE;
+    return Math.min(999, Math.max(0, v));
+  }
+  function ratesAreCustom() {
+    return Math.abs(getPremiumRate() - DEFAULT_PREMIUM) > 1e-9 || Math.abs(getLotFee() - DEFAULT_LOT_FEE) > 1e-9;
+  }
 
   var mode = 'pay'; // 'pay' = forward, 'bid' = reverse (max budget -> max bid)
   var modeValues = { pay: '', bid: '' }; // each tab remembers its own number
@@ -559,6 +640,8 @@
     const assurance = parseFloat(assuranceEl.value) || 0;
     const taxRate = getTaxRate();
     const transfer = transferEl.checked ? 10 : 0;
+    const premiumRate = getPremiumRate();
+    const lotFee = getLotFee();
 
     var bid = entered;
     var budgetShort = false;
@@ -568,8 +651,8 @@
       // (assurance is not taxed). Solve for Bid, round DOWN to a whole dollar so it never overshoots.
       const budget = entered;
       const taxableAllowed = (budget + mb - assurance) / (1 + taxRate);
-      const rawBid = (taxableAllowed - LOT_FEE - transfer) / (1 + PREMIUM_RATE);
-      bid = Math.floor(rawBid);
+      const rawBid = (taxableAllowed - lotFee - transfer) / (1 + premiumRate);
+      bid = Math.floor(rawBid + 1e-9); // epsilon: exact-boundary budgets must not lose a dollar to float noise
       if (budget <= 0) {
         bid = 0;
       } else if (bid < 1) {
@@ -578,8 +661,8 @@
       }
     }
 
-    const premium = bid * PREMIUM_RATE;
-    const subtotal = bid + premium + LOT_FEE + assurance + transfer;
+    const premium = bid * premiumRate;
+    const subtotal = bid + premium + lotFee + assurance + transfer;
     // MacBid does not tax Buyer Assurance (verified against real invoices, 2026-06-09)
     const tax = (subtotal - assurance) * taxRate;
     const totalBeforeMb = subtotal + tax;
@@ -587,7 +670,7 @@
 
     document.getElementById('outBid').textContent = fmt(bid);
     document.getElementById('outPremium').textContent = fmt(premium);
-    document.getElementById('outLot').textContent = fmt(LOT_FEE);
+    document.getElementById('outLot').textContent = fmt(lotFee);
     document.getElementById('assuranceRow').style.display = assurance > 0 ? '' : 'none';
     document.getElementById('outAssurance').textContent = fmt(assurance);
     document.getElementById('transferRow').style.display = transfer ? '' : 'none';
@@ -667,6 +750,23 @@
     } else {
       savingsSection.classList.remove('show');
     }
+
+    // Dynamic premium label, custom-rates flag, and empty state
+    var plabel = (premiumRate * 100).toFixed(2).replace(/\.?0+$/, '');
+    document.getElementById('premiumLabel').textContent = plabel === '' ? '0' : plabel;
+
+    var custom = ratesAreCustom();
+    var strip = document.getElementById('trustStrip');
+    strip.className = custom ? 'trust custom' : 'trust';
+    strip.innerHTML = custom
+      ? 'Custom fee rates active &mdash; Mac.bid standard is 15% + $3'
+      : '<span class="check">&#10003;</span> Fee math verified against real Mac.bid invoices &middot; Rates checked June 2026';
+    document.getElementById('resetRates').classList.toggle('show', custom);
+
+    var showBreakdown = mode === 'pay' ? entered > 0 : bid > 0;
+    document.querySelector('.breakdown').style.display = showBreakdown ? '' : 'none';
+    document.getElementById('emptyState').style.display = (mode === 'pay' && !showBreakdown) ? '' : 'none';
+    document.getElementById('resultsHeader').style.display = (mode === 'pay' && !showBreakdown) ? 'none' : '';
 
     maybeFlash(mode + '|' + fmt(totalBeforeMb) + '|' + fmt(total) + '|' + bid);
   }
@@ -767,6 +867,8 @@
     if (macbucksEl.value) p.set('mb', macbucksEl.value);
     if (transferEl.checked) p.set('tf', '1');
     if (retailEl.value) p.set('r', retailEl.value);
+    if (Math.abs(getPremiumRate() - DEFAULT_PREMIUM) > 1e-9) p.set('p', String(getPremiumRate() * 100));
+    if (Math.abs(getLotFee() - DEFAULT_LOT_FEE) > 1e-9) p.set('lf', String(getLotFee()));
     var qs = p.toString();
     return qs ? base + '?' + qs : base;
   }
@@ -816,6 +918,8 @@
     macbucksEl.value = '';
     assuranceEl.value = '';
     transferEl.checked = false;
+    premiumRateEl.value = '';
+    lotFeeEl.value = '';
     setLocationByLoc(getDefaultLoc());
     customTaxEl.value = '';
     customTaxEl.classList.remove('show');
@@ -834,6 +938,14 @@
     macbucksEl.addEventListener(evt, calculate);
     assuranceEl.addEventListener(evt, calculate);
     customTaxEl.addEventListener(evt, calculate);
+    premiumRateEl.addEventListener(evt, calculate);
+    lotFeeEl.addEventListener(evt, calculate);
+  });
+
+  document.getElementById('resetRates').addEventListener('click', function() {
+    premiumRateEl.value = '';
+    lotFeeEl.value = '';
+    calculate();
   });
 
   // ---- page load: URL params win over saved default ----
@@ -857,7 +969,9 @@
       if (p.get('mb')) macbucksEl.value = p.get('mb');
       if (p.get('tf') === '1') transferEl.checked = true;
       if (p.get('r')) retailEl.value = p.get('r');
-      if (p.get('a') || p.get('mb') || p.get('tf') === '1') openMoreOptions(true, false);
+      if (p.get('p')) premiumRateEl.value = p.get('p');
+      if (p.get('lf')) lotFeeEl.value = p.get('lf');
+      if (p.get('a') || p.get('mb') || p.get('tf') === '1' || p.get('p') || p.get('lf')) openMoreOptions(true, false);
     } else {
       setLocationByLoc(getDefaultLoc());
     }
