@@ -166,11 +166,11 @@
     border: 1px solid #333;
     border-radius: 10px;
     color: #666;
-    font-size: .62rem;
-    padding: 2px 9px;
+    padding: 2px 8px;
     cursor: pointer;
-    letter-spacing: .5px;
+    line-height: 0;
   }
+  .stay-tag svg { vertical-align: middle; }
   .stay-tag.on {
     color: #FFB81C;
     border-color: rgba(255,184,28,.5);
@@ -178,6 +178,46 @@
   .checkbox-group .stay-tag {
     position: static;
     margin-left: auto;
+  }
+  .pin-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 24px;
+  }
+  .pin-popup-card {
+    background: #141414;
+    border: 1px solid #FFB81C;
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 300px;
+    box-shadow: 0 8px 32px rgba(255,184,28,.2);
+  }
+  .pin-popup-card h3 {
+    color: #FFB81C;
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+  .pin-popup-card p {
+    color: #ccc;
+    font-size: .85rem;
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+  .pin-popup-card button {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #FFB81C;
+    border-radius: 8px;
+    background: #FFB81C;
+    color: #0a0a0a;
+    font-weight: 700;
+    font-size: .9rem;
+    cursor: pointer;
   }
   .trust {
     text-align: center;
@@ -444,7 +484,7 @@
 
   <div class="input-group">
     <label for="bid"><span id="bidLabel">Your Bid Amount</span></label>
-    <button type="button" class="stay-tag" data-f="bid">per tab</button>
+    <button type="button" class="stay-tag" data-f="bid" title="Pin this number to both tabs"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 9V4h1V2H7v2h1v5c0 .7-.3 1.4-.8 1.9L5 13v2h6v7h2v-7h6v-2l-2.2-2.1c-.5-.5-.8-1.2-.8-1.9z"/></svg></button>
     <span class="dollar">$</span>
     <input type="text" inputmode="decimal" id="bid" class="dollar-input" placeholder="0.00" autofocus>
     <button class="carry-chip" id="carryChip" type="button"></button>
@@ -523,7 +563,7 @@
   <div class="more-body" id="moreBody">
     <div class="input-group">
       <label for="assurance">Buyers Assurance Fee (optional)</label>
-      <button type="button" class="stay-tag" data-f="assurance">per tab</button>
+      <button type="button" class="stay-tag" data-f="assurance" title="Pin this number to both tabs"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 9V4h1V2H7v2h1v5c0 .7-.3 1.4-.8 1.9L5 13v2h6v7h2v-7h6v-2l-2.2-2.1c-.5-.5-.8-1.2-.8-1.9z"/></svg></button>
       <span class="dollar">$</span>
       <input type="text" inputmode="decimal" id="assurance" class="dollar-input" placeholder="0.00">
       <div class="hint">Check the listing &mdash; usually ~3% of retail price</div>
@@ -532,13 +572,13 @@
     <div class="checkbox-group">
       <input type="checkbox" id="transferFee">
       <label for="transferFee">Transfer Fee ($10.00)</label>
-      <button type="button" class="stay-tag" data-f="transfer">per tab</button>
+      <button type="button" class="stay-tag" data-f="transfer" title="Pin this checkbox to both tabs"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 9V4h1V2H7v2h1v5c0 .7-.3 1.4-.8 1.9L5 13v2h6v7h2v-7h6v-2l-2.2-2.1c-.5-.5-.8-1.2-.8-1.9z"/></svg></button>
       <div class="hint">Per item, within same district</div>
     </div>
 
     <div class="input-group">
       <label for="macbucks">Mac Bucks (optional)</label>
-      <button type="button" class="stay-tag" data-f="macbucks">per tab</button>
+      <button type="button" class="stay-tag" data-f="macbucks" title="Pin this number to both tabs"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 9V4h1V2H7v2h1v5c0 .7-.3 1.4-.8 1.9L5 13v2h6v7h2v-7h6v-2l-2.2-2.1c-.5-.5-.8-1.2-.8-1.9z"/></svg></button>
       <span class="dollar">$</span>
       <input type="text" inputmode="decimal" id="macbucks" class="dollar-input" placeholder="0.00">
       <div class="hint">Applied after tax</div>
@@ -560,7 +600,7 @@
 
   <div class="input-group">
     <label for="retail">Retail Price (optional)</label>
-    <button type="button" class="stay-tag" data-f="retail">per tab</button>
+    <button type="button" class="stay-tag" data-f="retail" title="Pin this number to both tabs"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 9V4h1V2H7v2h1v5c0 .7-.3 1.4-.8 1.9L5 13v2h6v7h2v-7h6v-2l-2.2-2.1c-.5-.5-.8-1.2-.8-1.9z"/></svg></button>
     <span class="dollar">$</span>
     <input type="text" inputmode="decimal" id="retail" class="dollar-input" placeholder="0.00">
   </div>
@@ -608,8 +648,16 @@
 
   <!-- tip jar goes here (Phase 3d, pending accounts from Justin) -->
 
+  <div class="pin-popup" id="pinPopup" style="display:none">
+    <div class="pin-popup-card">
+      <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="vertical-align:-2px"><path d="M16 9V4h1V2H7v2h1v5c0 .7-.3 1.4-.8 1.9L5 13v2h6v7h2v-7h6v-2l-2.2-2.1c-.5-.5-.8-1.2-.8-1.9z"/></svg> Pin a number</h3>
+      <p>A <b style="color:#FFB81C">gold pin</b> keeps that number on <b>both tabs</b> when you flip back and forth.<br><br>Gray pin = the number belongs to this tab only.<br><br>Tap any pin to switch it.</p>
+      <button id="pinPopupOk" type="button">Got it</button>
+    </div>
+  </div>
+
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.1-beta.6</div>
+  <div class="version">v2.1-beta.7</div>
 </div>
 
 <script>
@@ -899,13 +947,19 @@
   function updateStayTags() {
     document.querySelectorAll('.stay-tag').forEach(function(btn) {
       var f = btn.getAttribute('data-f');
-      btn.textContent = stays[f] ? 'both tabs' : 'per tab';
       btn.classList.toggle('on', !!stays[f]);
+      btn.setAttribute('aria-label', stays[f] ? 'Pinned to both tabs — tap to unpin' : 'Tap to pin this number to both tabs');
     });
   }
   document.querySelectorAll('.stay-tag').forEach(function(btn) {
     btn.addEventListener('click', function(e) {
       e.preventDefault(); // keep the tap from activating the field's label/checkbox
+      var explained = false;
+      try { explained = localStorage.getItem('macbid-pin-explained') === '1'; } catch (ex) {}
+      if (!explained) {
+        document.getElementById('pinPopup').style.display = 'flex';
+        return; // teach first — the pin toggles on the next tap
+      }
       var f = btn.getAttribute('data-f');
       stays[f] = !stays[f];
       if (stays[f]) {
@@ -919,6 +973,11 @@
     });
   });
   updateStayTags();
+
+  document.getElementById('pinPopupOk').addEventListener('click', function() {
+    try { localStorage.setItem('macbid-pin-explained', '1'); } catch (e) {}
+    document.getElementById('pinPopup').style.display = 'none';
+  });
 
   // ---- default location ----
   var defaultBtn = document.getElementById('setDefaultBtn');
