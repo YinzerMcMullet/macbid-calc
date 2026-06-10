@@ -122,6 +122,193 @@
     color: #555;
     margin-top: 5px;
   }
+  .advanced-label {
+    font-size: .7rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 4px 0 12px;
+    border-top: 1px solid #2a2a2a;
+    padding-top: 12px;
+  }
+  .rate-row { display: flex; gap: 10px; }
+  .rate-row .input-group { flex: 1; margin-bottom: 12px; }
+  .reset-rates {
+    display: none;
+    width: 100%;
+    margin: 0 0 14px;
+    padding: 7px;
+    background: none;
+    border: 1px dashed rgba(255,184,28,.45);
+    border-radius: 6px;
+    color: #FFB81C;
+    font-size: .7rem;
+    cursor: pointer;
+  }
+  .reset-rates.show { display: block; }
+  .carry-chip {
+    display: none;
+    margin-top: 8px;
+    padding: 5px 12px;
+    background: none;
+    border: 1px dashed rgba(255,184,28,.45);
+    border-radius: 14px;
+    color: #FFB81C;
+    font-size: .75rem;
+    cursor: pointer;
+  }
+  .carry-chip.show { display: inline-block; }
+  .steppers {
+    position: absolute;
+    right: 8px;
+    top: 27px;
+    display: flex;
+    gap: 6px;
+  }
+  .step-btn {
+    width: 34px;
+    height: 30px;
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    background: #222;
+    color: #ccc;
+    font-size: 1.05rem;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    -webkit-appearance: none;
+  }
+  .step-btn:hover, .step-btn:active { border-color: #FFB81C; color: #FFB81C; }
+  .input-group:has(.steppers) input { padding-right: 92px; }
+  .stay-tag {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    border: 1px solid #333;
+    border-radius: 10px;
+    color: #666;
+    padding: 2px 8px;
+    cursor: pointer;
+    line-height: 0;
+  }
+  .stay-tag svg { vertical-align: middle; }
+  .stay-tag.on {
+    color: #FFB81C;
+    border-color: rgba(255,184,28,.5);
+  }
+  .checkbox-group .stay-tag {
+    position: static;
+    margin-left: auto;
+  }
+  .pin-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 24px;
+  }
+  .pin-popup-card {
+    background: #141414;
+    border: 1px solid #FFB81C;
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 300px;
+    box-shadow: 0 8px 32px rgba(255,184,28,.2);
+  }
+  .pin-popup-card h3 {
+    color: #FFB81C;
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+  .pin-popup-card p {
+    color: #ccc;
+    font-size: .85rem;
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+  .pin-popup-card button {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #FFB81C;
+    border-radius: 8px;
+    background: #FFB81C;
+    color: #0a0a0a;
+    font-weight: 700;
+    font-size: .9rem;
+    cursor: pointer;
+  }
+  .trust {
+    text-align: center;
+    margin-top: 18px;
+    font-size: .68rem;
+    color: #777;
+    line-height: 1.5;
+  }
+  .trust .check { color: #34d399; }
+  .trust.custom { color: #FFB81C; }
+  .empty-state {
+    text-align: center;
+    padding: 28px 12px;
+    margin-top: 8px;
+    background: #1c1c1c;
+    border-radius: 10px;
+    color: #777;
+    font-size: .9rem;
+  }
+  .row .tag {
+    font-size: .65rem;
+    color: #555;
+    margin-left: 6px;
+  }
+  .howit-link {
+    display: block;
+    margin: 12px auto 0;
+    background: none;
+    border: none;
+    color: #FFB81C;
+    font-size: .72rem;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .tipjar { margin-top: 16px; text-align: center; }
+  .tipjar-header { font-size: .7rem; color: #666; margin-bottom: 8px; }
+  .tip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+  }
+  .tip-pill {
+    padding: 5px 12px;
+    border: 1px solid #333;
+    border-radius: 12px;
+    background: #1a1a1a;
+    color: #999;
+    font-size: .72rem;
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+  }
+  .tip-pill:hover, .tip-pill:active { border-color: #FFB81C; color: #FFB81C; }
+  .tip-pill.copied { border-color: #34d399; color: #34d399; }
+  .how-card {
+    max-height: 80vh;
+    overflow-y: auto;
+    text-align: left;
+  }
+  .how-avatar { display: block; margin: 0 auto 10px; width: 72px; height: auto; }
+  .how-card h3 { text-align: center; }
+  .how-lines p {
+    color: #ccc;
+    font-size: .82rem;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
   .more-toggle {
     display: flex;
     justify-content: space-between;
@@ -363,9 +550,12 @@
   </div>
 
   <div class="input-group">
-    <label for="bid" id="bidLabel">Your Bid Amount</label>
+    <label for="bid"><span id="bidLabel">Your Bid Amount</span></label>
+    <button type="button" class="stay-tag" data-f="bid" title="Pin this number to both tabs"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 9V4h1V2H7v2h1v5c0 .7-.3 1.4-.8 1.9L5 13v2h6v7h2v-7h6v-2l-2.2-2.1c-.5-.5-.8-1.2-.8-1.9z"/></svg></button>
     <span class="dollar">$</span>
     <input type="text" inputmode="decimal" id="bid" class="dollar-input" placeholder="0.00" autofocus>
+    <div class="steppers"><button type="button" class="step-btn" data-for="bid" data-step="-1" aria-label="One dollar less">&minus;</button><button type="button" class="step-btn" data-for="bid" data-step="1" aria-label="One dollar more">+</button></div>
+    <button class="carry-chip" id="carryChip" type="button"></button>
   </div>
 
   <div class="input-group">
@@ -397,9 +587,9 @@
         <option value="6.75" data-loc="akron-oh">Akron &mdash; 6.75%</option>
         <option value="6.75" data-loc="warren-oh">Warren &mdash; 6.75%</option>
         <option value="7.5" data-loc="boardman-oh">Boardman &mdash; 7.50%</option>
+        <option value="7.25" data-loc="bridgeport-oh">Bridgeport &mdash; 7.25%</option>
       </optgroup>
       <optgroup label="Pennsylvania &mdash; Allegheny Co. (7%)">
-        <option value="7" data-loc="mckees-pa">McKees Rocks</option>
         <option value="7" data-loc="robinson-pa">Robinson</option>
         <option value="7" data-loc="pittsburgh-mills-pa">Pittsburgh Mills (Tarentum)</option>
         <option value="7" data-loc="monroeville-pa">Monroeville</option>
@@ -407,13 +597,13 @@
       <optgroup label="Pennsylvania &mdash; Other Counties (6%)">
         <option value="6" data-loc="beaver-pa">Beaver Falls</option>
         <option value="6" data-loc="butler-pa">Butler</option>
+        <option value="6" data-loc="butler-yb-pa">Butler - Yinz Binz</option>
         <option value="6" data-loc="washington-pa">Washington</option>
-        <option value="6" data-loc="washington-bb-pa">Washington Big Box</option>
         <option value="6" data-loc="uniontown-pa">Uniontown</option>
       </optgroup>
       <optgroup label="South Carolina">
         <option value="7" data-loc="anderson-sc">Anderson &mdash; 7.00%</option>
-        <option value="7" data-loc="cowpens-sc">Cowpens &mdash; 7.00%</option>
+        <option value="7" data-loc="cowpens-sc">Spartanburg (Cowpens) &mdash; 7.00%</option>
         <option value="6" data-loc="greenville-sc">Greenville &mdash; 6.00%</option>
         <option value="7" data-loc="rockhill-sc">Rock Hill &mdash; 7.00%</option>
       </optgroup>
@@ -441,29 +631,49 @@
   <div class="more-body" id="moreBody">
     <div class="input-group">
       <label for="assurance">Buyers Assurance Fee (optional)</label>
+      <button type="button" class="stay-tag" data-f="assurance" title="Pin this number to both tabs"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 9V4h1V2H7v2h1v5c0 .7-.3 1.4-.8 1.9L5 13v2h6v7h2v-7h6v-2l-2.2-2.1c-.5-.5-.8-1.2-.8-1.9z"/></svg></button>
       <span class="dollar">$</span>
       <input type="text" inputmode="decimal" id="assurance" class="dollar-input" placeholder="0.00">
+      <div class="steppers"><button type="button" class="step-btn" data-for="assurance" data-step="-1" aria-label="One dollar less">&minus;</button><button type="button" class="step-btn" data-for="assurance" data-step="1" aria-label="One dollar more">+</button></div>
       <div class="hint">Check the listing &mdash; usually ~3% of retail price</div>
     </div>
 
     <div class="checkbox-group">
       <input type="checkbox" id="transferFee">
       <label for="transferFee">Transfer Fee ($10.00)</label>
+      <button type="button" class="stay-tag" data-f="transfer" title="Pin this checkbox to both tabs"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 9V4h1V2H7v2h1v5c0 .7-.3 1.4-.8 1.9L5 13v2h6v7h2v-7h6v-2l-2.2-2.1c-.5-.5-.8-1.2-.8-1.9z"/></svg></button>
       <div class="hint">Per item, within same district</div>
     </div>
 
     <div class="input-group">
       <label for="macbucks">Mac Bucks (optional)</label>
+      <button type="button" class="stay-tag" data-f="macbucks" title="Pin this number to both tabs"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 9V4h1V2H7v2h1v5c0 .7-.3 1.4-.8 1.9L5 13v2h6v7h2v-7h6v-2l-2.2-2.1c-.5-.5-.8-1.2-.8-1.9z"/></svg></button>
       <span class="dollar">$</span>
       <input type="text" inputmode="decimal" id="macbucks" class="dollar-input" placeholder="0.00">
+      <div class="steppers"><button type="button" class="step-btn" data-for="macbucks" data-step="-1" aria-label="One dollar less">&minus;</button><button type="button" class="step-btn" data-for="macbucks" data-step="1" aria-label="One dollar more">+</button></div>
       <div class="hint">Applied after tax</div>
     </div>
+
+    <div class="advanced-label">Advanced &mdash; fee rates</div>
+    <div class="rate-row">
+      <div class="input-group">
+        <label for="premiumRate">Buyer's Premium (%)</label>
+        <input type="text" inputmode="decimal" id="premiumRate" placeholder="15">
+      </div>
+      <div class="input-group">
+        <label for="lotFee">Lot Fee ($)</label>
+        <input type="text" inputmode="decimal" id="lotFee" placeholder="3.00">
+      </div>
+    </div>
+    <button class="reset-rates" id="resetRates" type="button">Reset to Mac.bid standard (15% + $3)</button>
   </div>
 
   <div class="input-group">
     <label for="retail">Retail Price (optional)</label>
+    <button type="button" class="stay-tag" data-f="retail" title="Pin this number to both tabs"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 9V4h1V2H7v2h1v5c0 .7-.3 1.4-.8 1.9L5 13v2h6v7h2v-7h6v-2l-2.2-2.1c-.5-.5-.8-1.2-.8-1.9z"/></svg></button>
     <span class="dollar">$</span>
     <input type="text" inputmode="decimal" id="retail" class="dollar-input" placeholder="0.00">
+    <div class="steppers"><button type="button" class="step-btn" data-for="retail" data-step="-1" aria-label="One dollar less">&minus;</button><button type="button" class="step-btn" data-for="retail" data-step="1" aria-label="One dollar more">+</button></div>
   </div>
 
   <div class="section-header" id="resultsHeader">Your True Cost</div>
@@ -474,11 +684,13 @@
     <div class="maxbid-sub" id="maxBidSub"></div>
   </div>
 
+  <div class="empty-state" id="emptyState" style="display:none">Enter your bid to see your true cost</div>
+
   <div class="breakdown">
     <div class="row"><span class="label">Winning Bid</span><span id="outBid">$0.00</span></div>
-    <div class="row"><span class="label">Buyer's Premium (15%)</span><span id="outPremium">$0.00</span></div>
+    <div class="row"><span class="label">Buyer's Premium (<span id="premiumLabel">15</span>%)</span><span id="outPremium">$0.00</span></div>
     <div class="row"><span class="label">Lot Fee</span><span id="outLot">$0.00</span></div>
-    <div class="row" id="assuranceRow" style="display:none"><span class="label">Buyers Assurance</span><span id="outAssurance">$0.00</span></div>
+    <div class="row" id="assuranceRow" style="display:none"><span class="label">Buyers Assurance<span class="tag">not taxed</span></span><span id="outAssurance">$0.00</span></div>
     <div class="row" id="transferRow" style="display:none"><span class="label">Transfer Fee</span><span id="outTransfer">$10.00</span></div>
     <div class="row subtotal"><span class="label">Subtotal</span><span id="outSubtotal">$0.00</span></div>
     <div class="row"><span class="label">Sales Tax (<span id="taxLabel">6</span>%)</span><span id="outTax">$0.00</span></div>
@@ -503,10 +715,49 @@
     <div class="savings-row" id="savingsPctRow"><span class="label" id="savingsPctLabel">Discount</span><span class="val" id="outSavingsPct">0%</span></div>
   </div>
 
-  <!-- tip jar goes here (Phase 3d, pending accounts from Justin) -->
+  <div class="trust" id="trustStrip"><span class="check">&#10003;</span> Fee math verified against real Mac.bid invoices &middot; Rates checked June 2026</div>
+
+  <button type="button" class="howit-link" id="howItWorksBtn">How it works</button>
+
+  <div class="tipjar">
+    <div class="tipjar-header">Enjoy the tool? Tip the Yinzer &#9749;</div>
+    <div class="tip-row">
+      <a class="tip-pill" href="https://venmo.com/u/McMullet19" target="_blank" rel="noopener">Venmo</a>
+      <a class="tip-pill" href="https://cash.app/$yinzermcmullet" target="_blank" rel="noopener">CashApp</a>
+      <a class="tip-pill" href="https://paypal.me/YinzerMcMullet" target="_blank" rel="noopener">PayPal</a>
+      <button type="button" class="tip-pill tip-copy" data-copy="bc1q60wshs9tl6vwxml6zcu9f6znlaw2xgus2j8vm5">BTC</button>
+      <button type="button" class="tip-pill tip-copy" data-copy="0x6a45c1799CcCEdDf5676927Ce5832BC63464BBcE">ETH</button>
+      <button type="button" class="tip-pill tip-copy" data-copy="EefGAu7vjChM6Mt64h2K7hSRJavBf1jtBp7ie7RRaJyr">SOL</button>
+      <button type="button" class="tip-pill tip-copy" data-copy="0x6a45c1799CcCEdDf5676927Ce5832BC63464BBcE">Base</button>
+    </div>
+  </div>
+
+  <div class="pin-popup" id="howPopup" style="display:none">
+    <div class="pin-popup-card how-card">
+      <img src="logo.png" alt="Yinzer McMullet" class="how-avatar">
+      <h3>Alright yinz, here's the deal.</h3>
+      <div class="how-lines">
+        <p><b>Type yer bid, pick yer warehouse</b> &mdash; I'll show ya what it really costs out the door. Fees, tax, all of it.</p>
+        <p><b>Two tabs, two questions.</b> "What will I pay?" runs the math forward. "What should I bid?" &mdash; give me yer budget and I'll tell ya the most you can bid and stay under it.</p>
+        <p><b>Them little pins?</b> Tap one gold and that number rides along when ya flip tabs. Gray means it stays put on its own tab.</p>
+        <p><b>More Options</b> holds the assurance fee, transfer fee, and Mac Bucks. Assurance ain't taxed &mdash; I checked the receipts.</p>
+        <p><b>Bid war heatin' up?</b> Smash that + button. A buck a tap.</p>
+        <p><b>Share</b> sends yer exact numbers to a buddy. And hit "Add to Home Screen" &mdash; I work offline in the warehouse n'at.</p>
+      </div>
+      <button id="howPopupOk" type="button">Got it</button>
+    </div>
+  </div>
+
+  <div class="pin-popup" id="pinPopup" style="display:none">
+    <div class="pin-popup-card">
+      <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="vertical-align:-2px"><path d="M16 9V4h1V2H7v2h1v5c0 .7-.3 1.4-.8 1.9L5 13v2h6v7h2v-7h6v-2l-2.2-2.1c-.5-.5-.8-1.2-.8-1.9z"/></svg> Pin a number</h3>
+      <p>A <b style="color:#FFB81C">gold pin</b> keeps that number on <b>both tabs</b> when you flip back and forth.<br><br>Gray pin = the number belongs to this tab only.<br><br>Tap any pin to switch it.</p>
+      <button id="pinPopupOk" type="button">Got it</button>
+    </div>
+  </div>
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.0</div>
+  <div class="version">v2.1</div>
 </div>
 
 <script>
@@ -517,14 +768,62 @@
   const transferEl = document.getElementById('transferFee');
   const taxSelectEl = document.getElementById('taxSelect');
   const customTaxEl = document.getElementById('customTax');
-  const LOT_FEE = 3.00;
-  const PREMIUM_RATE = 0.15;
+  const premiumRateEl = document.getElementById('premiumRate');
+  const lotFeeEl = document.getElementById('lotFee');
+  // Per-number tab behavior: true = "stays" (shared across tabs), false = "per tab"
+  const STAY_FIELDS = ['bid', 'assurance', 'macbucks', 'transfer', 'retail'];
+  var stays = { bid: false, assurance: false, macbucks: false, transfer: false, retail: false };
+  // Mac.bid standard rates — the verified defaults. Advanced override is session-only by design.
+  const DEFAULT_PREMIUM = 0.15;
+  const DEFAULT_LOT_FEE = 3.00;
+
+  function getPremiumRate() {
+    var v = parseFloat(premiumRateEl.value);
+    if (isNaN(v)) return DEFAULT_PREMIUM;
+    return Math.min(100, Math.max(0, v)) / 100;
+  }
+  function getLotFee() {
+    var v = parseFloat(lotFeeEl.value);
+    if (isNaN(v)) return DEFAULT_LOT_FEE;
+    return r2(Math.min(999, Math.max(0, v)));
+  }
+  function ratesAreCustom() {
+    return Math.abs(getPremiumRate() - DEFAULT_PREMIUM) > 1e-9 || Math.abs(getLotFee() - DEFAULT_LOT_FEE) > 1e-9;
+  }
 
   var mode = 'pay'; // 'pay' = forward, 'bid' = reverse (max budget -> max bid)
-  var modeValues = { pay: '', bid: '' }; // each tab remembers its own number
+
+  // Each tab is its own worksheet: all item numbers are per-tab (location/rates stay shared).
+  function blankTab() {
+    return { bid: '', assurance: '', macbucks: '', transfer: false, retail: '' };
+  }
+  var tabState = { pay: blankTab(), bid: blankTab() };
+
+  function snapshotTab() {
+    tabState[mode] = {
+      bid: bidEl.value,
+      assurance: assuranceEl.value,
+      macbucks: macbucksEl.value,
+      transfer: transferEl.checked,
+      retail: retailEl.value
+    };
+  }
+  function applyTab(m) {
+    var s = tabState[m];
+    bidEl.value = s.bid;
+    assuranceEl.value = s.assurance;
+    macbucksEl.value = s.macbucks;
+    transferEl.checked = s.transfer;
+    retailEl.value = s.retail;
+  }
 
   function fmt(n) {
     return '$' + n.toFixed(2);
+  }
+
+  // Round to cents, half-up, like MacBid's own invoice lines (tiny epsilon absorbs float drift).
+  function r2(n) {
+    return Math.round(n * 100 + 1e-6) / 100;
   }
 
   function getTaxRate() {
@@ -552,13 +851,15 @@
   }
 
   function calculate() {
-    modeValues[mode] = bidEl.value;
-    const entered = parseFloat(bidEl.value) || 0;
-    const retail = parseFloat(retailEl.value) || 0;
-    const mb = parseFloat(macbucksEl.value) || 0;
-    const assurance = parseFloat(assuranceEl.value) || 0;
+    snapshotTab();
+    const entered = r2(parseFloat(bidEl.value) || 0);
+    const retail = r2(parseFloat(retailEl.value) || 0);
+    const mb = r2(parseFloat(macbucksEl.value) || 0);
+    const assurance = r2(parseFloat(assuranceEl.value) || 0);
     const taxRate = getTaxRate();
     const transfer = transferEl.checked ? 10 : 0;
+    const premiumRate = getPremiumRate();
+    const lotFee = getLotFee();
 
     var bid = entered;
     var budgetShort = false;
@@ -568,8 +869,22 @@
       // (assurance is not taxed). Solve for Bid, round DOWN to a whole dollar so it never overshoots.
       const budget = entered;
       const taxableAllowed = (budget + mb - assurance) / (1 + taxRate);
-      const rawBid = (taxableAllowed - LOT_FEE - transfer) / (1 + PREMIUM_RATE);
-      bid = Math.floor(rawBid);
+      const rawBid = (taxableAllowed - lotFee - transfer) / (1 + premiumRate);
+      bid = Math.floor(rawBid + 1e-9); // epsilon: exact-boundary budgets must not lose a dollar to float noise
+      // Verify the candidate against the line-rounded forward math; per-line rounding can
+      // shift the real total a cent, and "bid up to" must never overshoot the budget.
+      const lineTotal = function(b) {
+        const p = r2(b * premiumRate);
+        const s = r2(b + p + lotFee + assurance + transfer);
+        const tx = r2((s - assurance) * taxRate);
+        return Math.max(0, r2(r2(s + tx) - mb));
+      };
+      if (bid < 0) bid = 0;
+      while (bid > 0 && lineTotal(bid) > budget + 1e-9) bid--;
+      // Line-rounding can also make the NEXT dollar affordable (e.g. $83.26 budget w/ transfer
+      // @ 6%: continuous math says 56.9975, but $57 line-rounds to exactly $83.26) — climb up.
+      var bumpGuard = 0;
+      while (bumpGuard++ < 5 && lineTotal(bid + 1) <= budget + 1e-9) bid++;
       if (budget <= 0) {
         bid = 0;
       } else if (bid < 1) {
@@ -578,21 +893,23 @@
       }
     }
 
-    const premium = bid * PREMIUM_RATE;
-    const subtotal = bid + premium + LOT_FEE + assurance + transfer;
-    // MacBid does not tax Buyer Assurance (verified against real invoices, 2026-06-09)
-    const tax = (subtotal - assurance) * taxRate;
-    const totalBeforeMb = subtotal + tax;
-    const total = Math.max(0, totalBeforeMb - mb);
+    // Every line rounds to cents like MacBid's own billing, so the rows on screen
+    // always sum exactly to the totals on screen.
+    // MacBid does not tax Buyer Assurance (verified against real invoices, 2026-06-09).
+    const premium = r2(bid * premiumRate);
+    const subtotal = r2(bid + premium + lotFee + assurance + transfer);
+    const tax = r2((subtotal - assurance) * taxRate);
+    const totalBeforeMb = r2(subtotal + tax);
+    const total = Math.max(0, r2(totalBeforeMb - mb));
 
     document.getElementById('outBid').textContent = fmt(bid);
     document.getElementById('outPremium').textContent = fmt(premium);
-    document.getElementById('outLot').textContent = fmt(LOT_FEE);
+    document.getElementById('outLot').textContent = fmt(lotFee);
     document.getElementById('assuranceRow').style.display = assurance > 0 ? '' : 'none';
     document.getElementById('outAssurance').textContent = fmt(assurance);
     document.getElementById('transferRow').style.display = transfer ? '' : 'none';
     document.getElementById('outSubtotal').textContent = fmt(subtotal);
-    document.getElementById('taxLabel').textContent = (taxRate * 100).toFixed(1).replace(/\.0$/, '');
+    document.getElementById('taxLabel').textContent = String(+(taxRate * 100).toFixed(3)); // full rate, e.g. 8.375 — must match the dropdown exactly
     document.getElementById('outTax').textContent = fmt(tax);
     document.getElementById('outTotal').textContent = fmt(totalBeforeMb);
     var mbSection = document.getElementById('macbucksSection');
@@ -668,13 +985,46 @@
       savingsSection.classList.remove('show');
     }
 
+    // Dynamic premium label, custom-rates flag, and empty state
+    var plabel = (premiumRate * 100).toFixed(2).replace(/\.?0+$/, '');
+    document.getElementById('premiumLabel').textContent = plabel === '' ? '0' : plabel;
+
+    var custom = ratesAreCustom();
+    var strip = document.getElementById('trustStrip');
+    strip.className = custom ? 'trust custom' : 'trust';
+    strip.innerHTML = custom
+      ? 'Custom fee rates active &mdash; Mac.bid standard is 15% + $3'
+      : '<span class="check">&#10003;</span> Fee math verified against real Mac.bid invoices &middot; Rates checked June 2026';
+    document.getElementById('resetRates').classList.toggle('show', custom);
+
+    var showBreakdown = mode === 'pay' ? entered > 0 : bid > 0;
+    document.querySelector('.breakdown').style.display = showBreakdown ? '' : 'none';
+    document.getElementById('emptyState').style.display = (mode === 'pay' && !showBreakdown) ? '' : 'none';
+    document.getElementById('resultsHeader').style.display = (mode === 'pay' && !showBreakdown) ? 'none' : '';
+
+    // One-tap carry chip: offer the other tab's whole worksheet when this tab is empty (carry-over off)
+    var otherMode = mode === 'pay' ? 'bid' : 'pay';
+    var otherVal = (tabState[otherMode].bid || '').trim();
+    var chip = document.getElementById('carryChip');
+    if (!stays.bid && bidEl.value.trim() === '' && (parseFloat(otherVal) || 0) > 0) {
+      chip.textContent = 'Use $' + otherVal + ' here?';
+      chip.classList.add('show');
+    } else {
+      chip.classList.remove('show');
+    }
+
     maybeFlash(mode + '|' + fmt(totalBeforeMb) + '|' + fmt(total) + '|' + bid);
   }
 
   // ---- mode tabs ----
   function setMode(m) {
+    if (m !== mode) {
+      snapshotTab();
+      var from = tabState[mode], to = tabState[m];
+      STAY_FIELDS.forEach(function(f) { if (stays[f]) to[f] = from[f]; }); // "stays" numbers follow you
+    }
     mode = m;
-    bidEl.value = modeValues[m];
+    applyTab(m);
     document.getElementById('tabPay').classList.toggle('active', m === 'pay');
     document.getElementById('tabBid').classList.toggle('active', m === 'bid');
     document.getElementById('bidLabel').textContent = m === 'pay' ? 'Your Bid Amount' : 'Your Max Budget (out the door)';
@@ -701,6 +1051,96 @@
   try {
     if (localStorage.getItem('macbid-more-open') === '1') openMoreOptions(true, false);
   } catch (e) {}
+
+  // ---- per-number stays/per-tab tags ----
+  try {
+    var savedStays = localStorage.getItem('macbid-stays');
+    if (savedStays) {
+      var parsedStays = JSON.parse(savedStays);
+      STAY_FIELDS.forEach(function(f) { if (typeof parsedStays[f] === 'boolean') stays[f] = parsedStays[f]; });
+    } else if (localStorage.getItem('macbid-carry') === '1') {
+      STAY_FIELDS.forEach(function(f) { stays[f] = true; }); // migrate the old all-or-nothing toggle
+    }
+  } catch (e) {}
+  function saveStays() {
+    try { localStorage.setItem('macbid-stays', JSON.stringify(stays)); } catch (e) {}
+  }
+  function updateStayTags() {
+    document.querySelectorAll('.stay-tag').forEach(function(btn) {
+      var f = btn.getAttribute('data-f');
+      btn.classList.toggle('on', !!stays[f]);
+      btn.setAttribute('aria-label', stays[f] ? 'Pinned to both tabs — tap to unpin' : 'Tap to pin this number to both tabs');
+    });
+  }
+  document.querySelectorAll('.stay-tag').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault(); // keep the tap from activating the field's label/checkbox
+      var explained = false;
+      try { explained = localStorage.getItem('macbid-pin-explained') === '1'; } catch (ex) {}
+      if (!explained) {
+        document.getElementById('pinPopup').style.display = 'flex';
+        return; // teach first — the pin toggles on the next tap
+      }
+      var f = btn.getAttribute('data-f');
+      stays[f] = !stays[f];
+      if (stays[f]) {
+        snapshotTab();
+        var other = mode === 'pay' ? 'bid' : 'pay';
+        tabState[other][f] = tabState[mode][f]; // flipping to "stays" syncs the number across tabs now
+      }
+      saveStays();
+      updateStayTags();
+      calculate();
+    });
+  });
+  updateStayTags();
+
+  // ---- plus/minus steppers ($1 per tap; minus to zero empties the field) ----
+  document.querySelectorAll('.step-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var el = document.getElementById(btn.getAttribute('data-for'));
+      var raw = parseFloat(el.value);
+      var next = r2((isNaN(raw) ? 0 : raw) + parseFloat(btn.getAttribute('data-step')));
+      if (next <= 0) {
+        el.value = '';
+      } else {
+        el.value = (next % 1) ? next.toFixed(2) : String(next);
+      }
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  });
+
+  // ---- tip jar: crypto tap-to-copy ----
+  document.querySelectorAll('.tip-copy').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var original = btn.textContent;
+      copyText(btn.getAttribute('data-copy')).then(function() {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(function() {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1600);
+      }).catch(function() {
+        btn.textContent = 'Copy failed';
+        setTimeout(function() { btn.textContent = original; }, 1600);
+      });
+    });
+  });
+
+  // ---- "How it works" popup (Yinzer does the talking) ----
+  document.getElementById('howItWorksBtn').addEventListener('click', function() {
+    document.getElementById('howPopup').style.display = 'flex';
+  });
+  document.getElementById('howPopupOk').addEventListener('click', function() {
+    document.getElementById('howPopup').style.display = 'none';
+  });
+
+  document.getElementById('pinPopupOk').addEventListener('click', function() {
+    try { localStorage.setItem('macbid-pin-explained', '1'); } catch (e) {}
+    document.getElementById('pinPopup').style.display = 'none';
+  });
 
   // ---- default location ----
   var defaultBtn = document.getElementById('setDefaultBtn');
@@ -767,6 +1207,8 @@
     if (macbucksEl.value) p.set('mb', macbucksEl.value);
     if (transferEl.checked) p.set('tf', '1');
     if (retailEl.value) p.set('r', retailEl.value);
+    if (Math.abs(getPremiumRate() - DEFAULT_PREMIUM) > 1e-9) p.set('p', String(getPremiumRate() * 100));
+    if (Math.abs(getLotFee() - DEFAULT_LOT_FEE) > 1e-9) p.set('lf', String(getLotFee()));
     var qs = p.toString();
     return qs ? base + '?' + qs : base;
   }
@@ -783,20 +1225,24 @@
     }, 1600);
   }
   function copyText(text) {
+    var legacyCopy = function() {
+      return new Promise(function(resolve, reject) {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy') ? resolve() : reject(); }
+        catch (e) { reject(e); }
+        finally { document.body.removeChild(ta); }
+      });
+    };
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      return navigator.clipboard.writeText(text);
+      // Fall back even when the modern API exists but rejects (webviews, embeds)
+      return navigator.clipboard.writeText(text).catch(legacyCopy);
     }
-    return new Promise(function(resolve, reject) {
-      var ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
-      try { document.execCommand('copy') ? resolve() : reject(); }
-      catch (e) { reject(e); }
-      finally { document.body.removeChild(ta); }
-    });
+    return legacyCopy();
   }
   shareBtn.addEventListener('click', function() {
     var url = buildShareUrl();
@@ -810,15 +1256,16 @@
 
   // ---- clear ----
   document.getElementById('clearBtn').addEventListener('click', function() {
-    modeValues = { pay: '', bid: '' };
+    tabState = { pay: blankTab(), bid: blankTab() };
     bidEl.value = '';
     retailEl.value = '';
     macbucksEl.value = '';
     assuranceEl.value = '';
     transferEl.checked = false;
-    setLocationByLoc(getDefaultLoc());
-    customTaxEl.value = '';
-    customTaxEl.classList.remove('show');
+    premiumRateEl.value = '';
+    lotFeeEl.value = '';
+    // Location and its custom tax survive Clear — "next item, same warehouse".
+    // A fresh page load still applies the saved default location.
     if (location.search) {
       try { history.replaceState(null, '', location.pathname); } catch (e) {}
     }
@@ -834,6 +1281,22 @@
     macbucksEl.addEventListener(evt, calculate);
     assuranceEl.addEventListener(evt, calculate);
     customTaxEl.addEventListener(evt, calculate);
+    premiumRateEl.addEventListener(evt, calculate);
+    lotFeeEl.addEventListener(evt, calculate);
+  });
+
+  document.getElementById('resetRates').addEventListener('click', function() {
+    premiumRateEl.value = '';
+    lotFeeEl.value = '';
+    calculate();
+  });
+
+  document.getElementById('carryChip').addEventListener('click', function() {
+    var otherMode = mode === 'pay' ? 'bid' : 'pay';
+    tabState[mode] = Object.assign({}, tabState[otherMode]);
+    applyTab(mode);
+    calculate();
+    bidEl.focus();
   });
 
   // ---- page load: URL params win over saved default ----
@@ -852,17 +1315,21 @@
       } else if (!loc || !setLocationByLoc(loc)) {
         setLocationByLoc(getDefaultLoc());
       }
-      if (p.get('b')) modeValues[targetMode] = p.get('b');
-      if (p.get('a')) assuranceEl.value = p.get('a');
-      if (p.get('mb')) macbucksEl.value = p.get('mb');
-      if (p.get('tf') === '1') transferEl.checked = true;
-      if (p.get('r')) retailEl.value = p.get('r');
-      if (p.get('a') || p.get('mb') || p.get('tf') === '1') openMoreOptions(true, false);
-    } else {
-      setLocationByLoc(getDefaultLoc());
+      if (p.get('b')) tabState[targetMode].bid = p.get('b');
+      if (p.get('a')) tabState[targetMode].assurance = p.get('a');
+      if (p.get('mb')) tabState[targetMode].macbucks = p.get('mb');
+      if (p.get('tf') === '1') tabState[targetMode].transfer = true;
+      if (p.get('r')) tabState[targetMode].retail = p.get('r');
+      if (p.get('p')) premiumRateEl.value = p.get('p');
+      if (p.get('lf')) lotFeeEl.value = p.get('lf');
+      if (p.get('a') || p.get('mb') || p.get('tf') === '1' || p.get('p') || p.get('lf')) openMoreOptions(true, false);
+    } else if (!setLocationByLoc(getDefaultLoc())) {
+      setLocationByLoc(DEFAULT_LOC); // saved default points at a removed location — fall back to Butler
     }
 
     updateDefaultBtn();
+    mode = targetMode; // set before setMode so carry-over can't stomp URL params
+    applyTab(targetMode);
     setMode(targetMode);
   })();
 
