@@ -756,7 +756,7 @@
   </div>
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.1.1</div>
+  <div class="version">v2.2</div>
 </div>
 
 <script>
@@ -1243,13 +1243,50 @@
     }
     return legacyCopy();
   }
+  // Readable summary for texts/group chats — numbers come straight from the
+  // displayed (line-rounded) breakdown so the share always matches the screen.
+  function buildShareText() {
+    var t = function(id) { return document.getElementById(id).textContent; };
+    var num = function(s) { return parseFloat(String(s).replace(/[^0-9.]/g, '')) || 0; };
+    var lines = ["MacBid Check — Yinzer McMullet's"];
+
+    var bidShown = num(t('outBid'));
+    var totalBefore = num(t('outTotal'));
+    var mbActive = document.getElementById('macbucksSection').style.display !== 'none';
+    var youPay = mbActive ? t('outFinal') : t('outTotal');
+    var fees = r2(totalBefore - bidShown);
+
+    if (mode === 'bid') {
+      var maxBidShown = t('outMaxBid');
+      lines.push('Budget: ' + fmt(num(bidEl.value)) + ' → Bid up to: ' + maxBidShown);
+      if (maxBidShown !== '—') lines.push('Out the door: ' + youPay + ' (fees +' + fmt(fees) + ')');
+    } else {
+      lines.push('Bid: ' + fmt(bidShown));
+      lines.push('You Pay: ' + youPay + ' (fees +' + fmt(fees) + ')');
+    }
+    if (mbActive) lines.push('Mac Bucks: ' + t('outMacbucks'));
+
+    if (document.getElementById('savingsSection').classList.contains('show')) {
+      var saveLabel = t('savingsDollarLabel');
+      lines.push('Retail: ' + t('outRetail') + ' → ' + saveLabel + ' ' + t('outSavingsDollar') + ' (' + t('outSavingsPct') + ')');
+    }
+
+    var opt = taxSelectEl.options[taxSelectEl.selectedIndex];
+    var locName = opt ? opt.text.replace(/\s*—.*$/, '').trim() : '';
+    lines.push('Location: ' + locName + ' — ' + t('taxLabel') + '% tax');
+    if (ratesAreCustom()) lines.push('(custom fee rates active)');
+
+    return lines.join('\n');
+  }
+
   shareBtn.addEventListener('click', function() {
     var url = buildShareUrl();
+    var text = buildShareText();
     if (navigator.share) {
-      navigator.share({ title: "Yinzer McMullet's Mac Bid Checker", url: url }).catch(function() {});
+      navigator.share({ title: "Yinzer McMullet's Mac Bid Checker", text: text, url: url }).catch(function() {});
     } else {
-      copyText(url).then(function() { shareConfirm('Link copied!'); })
-                   .catch(function() { shareConfirm('Copy failed'); });
+      copyText(text + '\n' + url).then(function() { shareConfirm('Copied!'); })
+                                 .catch(function() { shareConfirm('Copy failed'); });
     }
   });
 
