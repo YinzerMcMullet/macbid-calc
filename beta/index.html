@@ -536,6 +536,22 @@
     color: #444;
     letter-spacing: 1px;
   }
+  .update-toast {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    z-index: 60;
+    padding: 13px;
+    background: #141414;
+    border: 1px solid #FFB81C;
+    border-radius: 10px;
+    color: #FFB81C;
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(0,0,0,.6);
+  }
 </style>
 </head>
 <body>
@@ -827,7 +843,9 @@
   </div>
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.3-beta.2</div>
+  <div class="version">v2.3-beta.3</div>
+
+  <button type="button" class="update-toast" id="updateToast" style="display:none">New version just dropped, yinz &mdash; tap to update</button>
 </div>
 
 <script>
@@ -1599,7 +1617,21 @@
   // ---- PWA: offline + add to home screen ----
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-      navigator.serviceWorker.register('./sw.js').catch(function() {});
+      navigator.serviceWorker.register('./sw.js').then(function(reg) {
+        // When a fresh build finishes installing behind the scenes, offer it Yinzer-style.
+        reg.addEventListener('updatefound', function() {
+          var nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener('statechange', function() {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+              document.getElementById('updateToast').style.display = '';
+            }
+          });
+        });
+      }).catch(function() {});
+    });
+    document.getElementById('updateToast').addEventListener('click', function() {
+      location.reload();
     });
   }
 </script>
