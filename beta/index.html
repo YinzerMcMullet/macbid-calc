@@ -264,6 +264,51 @@
     color: #555;
     margin-left: 6px;
   }
+  .howit-link {
+    display: block;
+    margin: 12px auto 0;
+    background: none;
+    border: none;
+    color: #FFB81C;
+    font-size: .72rem;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .tipjar { margin-top: 16px; text-align: center; }
+  .tipjar-header { font-size: .7rem; color: #666; margin-bottom: 8px; }
+  .tip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+  }
+  .tip-pill {
+    padding: 5px 12px;
+    border: 1px solid #333;
+    border-radius: 12px;
+    background: #1a1a1a;
+    color: #999;
+    font-size: .72rem;
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+  }
+  .tip-pill:hover, .tip-pill:active { border-color: #FFB81C; color: #FFB81C; }
+  .tip-pill.copied { border-color: #34d399; color: #34d399; }
+  .how-card {
+    max-height: 80vh;
+    overflow-y: auto;
+    text-align: left;
+  }
+  .how-avatar { display: block; margin: 0 auto 10px; width: 72px; height: auto; }
+  .how-card h3 { text-align: center; }
+  .how-lines p {
+    color: #ccc;
+    font-size: .82rem;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
   .more-toggle {
     display: flex;
     justify-content: space-between;
@@ -672,7 +717,36 @@
 
   <div class="trust" id="trustStrip"><span class="check">&#10003;</span> Fee math verified against real Mac.bid invoices &middot; Rates checked June 2026</div>
 
-  <!-- tip jar goes here (Phase 3d, pending accounts from Justin) -->
+  <button type="button" class="howit-link" id="howItWorksBtn">How it works</button>
+
+  <div class="tipjar">
+    <div class="tipjar-header">Enjoy the tool? Tip the Yinzer &#9749;</div>
+    <div class="tip-row">
+      <a class="tip-pill" href="https://venmo.com/u/McMullet19" target="_blank" rel="noopener">Venmo</a>
+      <a class="tip-pill" href="https://cash.app/$yinzermcmullet" target="_blank" rel="noopener">CashApp</a>
+      <a class="tip-pill" href="https://paypal.me/YinzerMcMullet" target="_blank" rel="noopener">PayPal</a>
+      <button type="button" class="tip-pill tip-copy" data-copy="bc1q60wshs9tl6vwxml6zcu9f6znlaw2xgus2j8vm5">BTC</button>
+      <button type="button" class="tip-pill tip-copy" data-copy="0x6a45c1799CcCEdDf5676927Ce5832BC63464BBcE">ETH</button>
+      <button type="button" class="tip-pill tip-copy" data-copy="EefGAu7vjChM6Mt64h2K7hSRJavBf1jtBp7ie7RRaJyr">SOL</button>
+      <button type="button" class="tip-pill tip-copy" data-copy="0x6a45c1799CcCEdDf5676927Ce5832BC63464BBcE">Base</button>
+    </div>
+  </div>
+
+  <div class="pin-popup" id="howPopup" style="display:none">
+    <div class="pin-popup-card how-card">
+      <img src="logo.png" alt="Yinzer McMullet" class="how-avatar">
+      <h3>Alright yinz, here's the deal.</h3>
+      <div class="how-lines">
+        <p><b>Type yer bid, pick yer warehouse</b> &mdash; I'll show ya what it really costs out the door. Fees, tax, all of it.</p>
+        <p><b>Two tabs, two questions.</b> "What will I pay?" runs the math forward. "What should I bid?" &mdash; give me yer budget and I'll tell ya the most you can bid and stay under it.</p>
+        <p><b>Them little pins?</b> Tap one gold and that number rides along when ya flip tabs. Gray means it stays put on its own tab.</p>
+        <p><b>More Options</b> holds the assurance fee, transfer fee, and Mac Bucks. Assurance ain't taxed &mdash; I checked the receipts.</p>
+        <p><b>Bid war heatin' up?</b> Smash that + button. A buck a tap.</p>
+        <p><b>Share</b> sends yer exact numbers to a buddy. And hit "Add to Home Screen" &mdash; I work offline in the warehouse n'at.</p>
+      </div>
+      <button id="howPopupOk" type="button">Got it</button>
+    </div>
+  </div>
 
   <div class="pin-popup" id="pinPopup" style="display:none">
     <div class="pin-popup-card">
@@ -683,7 +757,7 @@
   </div>
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.1-beta.12</div>
+  <div class="version">v2.1-beta.13</div>
 </div>
 
 <script>
@@ -1037,6 +1111,32 @@
     });
   });
 
+  // ---- tip jar: crypto tap-to-copy ----
+  document.querySelectorAll('.tip-copy').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var original = btn.textContent;
+      copyText(btn.getAttribute('data-copy')).then(function() {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(function() {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1600);
+      }).catch(function() {
+        btn.textContent = 'Copy failed';
+        setTimeout(function() { btn.textContent = original; }, 1600);
+      });
+    });
+  });
+
+  // ---- "How it works" popup (Yinzer does the talking) ----
+  document.getElementById('howItWorksBtn').addEventListener('click', function() {
+    document.getElementById('howPopup').style.display = 'flex';
+  });
+  document.getElementById('howPopupOk').addEventListener('click', function() {
+    document.getElementById('howPopup').style.display = 'none';
+  });
+
   document.getElementById('pinPopupOk').addEventListener('click', function() {
     try { localStorage.setItem('macbid-pin-explained', '1'); } catch (e) {}
     document.getElementById('pinPopup').style.display = 'none';
@@ -1125,20 +1225,24 @@
     }, 1600);
   }
   function copyText(text) {
+    var legacyCopy = function() {
+      return new Promise(function(resolve, reject) {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy') ? resolve() : reject(); }
+        catch (e) { reject(e); }
+        finally { document.body.removeChild(ta); }
+      });
+    };
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      return navigator.clipboard.writeText(text);
+      // Fall back even when the modern API exists but rejects (webviews, embeds)
+      return navigator.clipboard.writeText(text).catch(legacyCopy);
     }
-    return new Promise(function(resolve, reject) {
-      var ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
-      try { document.execCommand('copy') ? resolve() : reject(); }
-      catch (e) { reject(e); }
-      finally { document.body.removeChild(ta); }
-    });
+    return legacyCopy();
   }
   shareBtn.addEventListener('click', function() {
     var url = buildShareUrl();
