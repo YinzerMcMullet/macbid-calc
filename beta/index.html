@@ -158,6 +158,28 @@
     cursor: pointer;
   }
   .carry-chip.show { display: inline-block; }
+  .steppers {
+    position: absolute;
+    right: 8px;
+    top: 27px;
+    display: flex;
+    gap: 6px;
+  }
+  .step-btn {
+    width: 34px;
+    height: 30px;
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    background: #222;
+    color: #ccc;
+    font-size: 1.05rem;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    -webkit-appearance: none;
+  }
+  .step-btn:hover, .step-btn:active { border-color: #FFB81C; color: #FFB81C; }
+  .input-group:has(.steppers) input { padding-right: 92px; }
   .stay-tag {
     position: absolute;
     top: 0;
@@ -487,6 +509,7 @@
     <button type="button" class="stay-tag" data-f="bid" title="Pin this number to both tabs"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 9V4h1V2H7v2h1v5c0 .7-.3 1.4-.8 1.9L5 13v2h6v7h2v-7h6v-2l-2.2-2.1c-.5-.5-.8-1.2-.8-1.9z"/></svg></button>
     <span class="dollar">$</span>
     <input type="text" inputmode="decimal" id="bid" class="dollar-input" placeholder="0.00" autofocus>
+    <div class="steppers"><button type="button" class="step-btn" data-for="bid" data-step="-1" aria-label="One dollar less">&minus;</button><button type="button" class="step-btn" data-for="bid" data-step="1" aria-label="One dollar more">+</button></div>
     <button class="carry-chip" id="carryChip" type="button"></button>
   </div>
 
@@ -566,6 +589,7 @@
       <button type="button" class="stay-tag" data-f="assurance" title="Pin this number to both tabs"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 9V4h1V2H7v2h1v5c0 .7-.3 1.4-.8 1.9L5 13v2h6v7h2v-7h6v-2l-2.2-2.1c-.5-.5-.8-1.2-.8-1.9z"/></svg></button>
       <span class="dollar">$</span>
       <input type="text" inputmode="decimal" id="assurance" class="dollar-input" placeholder="0.00">
+      <div class="steppers"><button type="button" class="step-btn" data-for="assurance" data-step="-1" aria-label="One dollar less">&minus;</button><button type="button" class="step-btn" data-for="assurance" data-step="1" aria-label="One dollar more">+</button></div>
       <div class="hint">Check the listing &mdash; usually ~3% of retail price</div>
     </div>
 
@@ -581,6 +605,7 @@
       <button type="button" class="stay-tag" data-f="macbucks" title="Pin this number to both tabs"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 9V4h1V2H7v2h1v5c0 .7-.3 1.4-.8 1.9L5 13v2h6v7h2v-7h6v-2l-2.2-2.1c-.5-.5-.8-1.2-.8-1.9z"/></svg></button>
       <span class="dollar">$</span>
       <input type="text" inputmode="decimal" id="macbucks" class="dollar-input" placeholder="0.00">
+      <div class="steppers"><button type="button" class="step-btn" data-for="macbucks" data-step="-1" aria-label="One dollar less">&minus;</button><button type="button" class="step-btn" data-for="macbucks" data-step="1" aria-label="One dollar more">+</button></div>
       <div class="hint">Applied after tax</div>
     </div>
 
@@ -603,6 +628,7 @@
     <button type="button" class="stay-tag" data-f="retail" title="Pin this number to both tabs"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 9V4h1V2H7v2h1v5c0 .7-.3 1.4-.8 1.9L5 13v2h6v7h2v-7h6v-2l-2.2-2.1c-.5-.5-.8-1.2-.8-1.9z"/></svg></button>
     <span class="dollar">$</span>
     <input type="text" inputmode="decimal" id="retail" class="dollar-input" placeholder="0.00">
+    <div class="steppers"><button type="button" class="step-btn" data-for="retail" data-step="-1" aria-label="One dollar less">&minus;</button><button type="button" class="step-btn" data-for="retail" data-step="1" aria-label="One dollar more">+</button></div>
   </div>
 
   <div class="section-header" id="resultsHeader">Your True Cost</div>
@@ -657,7 +683,7 @@
   </div>
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.1-beta.9</div>
+  <div class="version">v2.1-beta.10</div>
 </div>
 
 <script>
@@ -994,6 +1020,22 @@
     });
   });
   updateStayTags();
+
+  // ---- plus/minus steppers ($1 per tap; minus to zero empties the field) ----
+  document.querySelectorAll('.step-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var el = document.getElementById(btn.getAttribute('data-for'));
+      var raw = parseFloat(el.value);
+      var next = r2((isNaN(raw) ? 0 : raw) + parseFloat(btn.getAttribute('data-step')));
+      if (next <= 0) {
+        el.value = '';
+      } else {
+        el.value = (next % 1) ? next.toFixed(2) : String(next);
+      }
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  });
 
   document.getElementById('pinPopupOk').addEventListener('click', function() {
     try { localStorage.setItem('macbid-pin-explained', '1'); } catch (e) {}
