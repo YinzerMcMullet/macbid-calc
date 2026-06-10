@@ -521,8 +521,8 @@
 
     <div class="checkbox-group">
       <input type="checkbox" id="carryToggle">
-      <label for="carryToggle">Keep the same number when switching tabs</label>
-      <div class="hint">Off = each tab remembers its own number</div>
+      <label for="carryToggle">Keep my numbers when switching tabs</label>
+      <div class="hint">Off = each tab is its own worksheet</div>
     </div>
 
     <div class="advanced-label">Advanced &mdash; fee rates</div>
@@ -589,7 +589,7 @@
   <!-- tip jar goes here (Phase 3d, pending accounts from Justin) -->
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.1-beta.3</div>
+  <div class="version">v2.1-beta.4</div>
 </div>
 
 <script>
@@ -622,7 +622,30 @@
   }
 
   var mode = 'pay'; // 'pay' = forward, 'bid' = reverse (max budget -> max bid)
-  var modeValues = { pay: '', bid: '' }; // each tab remembers its own number
+
+  // Each tab is its own worksheet: all item numbers are per-tab (location/rates stay shared).
+  function blankTab() {
+    return { bid: '', assurance: '', macbucks: '', transfer: false, retail: '' };
+  }
+  var tabState = { pay: blankTab(), bid: blankTab() };
+
+  function snapshotTab() {
+    tabState[mode] = {
+      bid: bidEl.value,
+      assurance: assuranceEl.value,
+      macbucks: macbucksEl.value,
+      transfer: transferEl.checked,
+      retail: retailEl.value
+    };
+  }
+  function applyTab(m) {
+    var s = tabState[m];
+    bidEl.value = s.bid;
+    assuranceEl.value = s.assurance;
+    macbucksEl.value = s.macbucks;
+    transferEl.checked = s.transfer;
+    retailEl.value = s.retail;
+  }
 
   function fmt(n) {
     return '$' + n.toFixed(2);
@@ -653,7 +676,7 @@
   }
 
   function calculate() {
-    modeValues[mode] = bidEl.value;
+    snapshotTab();
     const entered = parseFloat(bidEl.value) || 0;
     const retail = parseFloat(retailEl.value) || 0;
     const mb = parseFloat(macbucksEl.value) || 0;
@@ -788,9 +811,9 @@
     document.getElementById('emptyState').style.display = (mode === 'pay' && !showBreakdown) ? '' : 'none';
     document.getElementById('resultsHeader').style.display = (mode === 'pay' && !showBreakdown) ? 'none' : '';
 
-    // One-tap carry chip: offer the other tab's number when this tab is empty (and carry-over is off)
+    // One-tap carry chip: offer the other tab's whole worksheet when this tab is empty (carry-over off)
     var otherMode = mode === 'pay' ? 'bid' : 'pay';
-    var otherVal = (modeValues[otherMode] || '').trim();
+    var otherVal = (tabState[otherMode].bid || '').trim();
     var chip = document.getElementById('carryChip');
     if (!carryEl.checked && bidEl.value.trim() === '' && (parseFloat(otherVal) || 0) > 0) {
       chip.textContent = 'Use $' + otherVal + ' here?';
@@ -804,9 +827,12 @@
 
   // ---- mode tabs ----
   function setMode(m) {
-    if (carryEl.checked) modeValues[m] = bidEl.value; // carry-over mode: the number follows you
+    if (carryEl.checked && m !== mode) {
+      snapshotTab();
+      tabState[m] = Object.assign({}, tabState[mode]); // carry-over: the whole worksheet follows you
+    }
     mode = m;
-    bidEl.value = modeValues[m];
+    applyTab(m);
     document.getElementById('tabPay').classList.toggle('active', m === 'pay');
     document.getElementById('tabBid').classList.toggle('active', m === 'bid');
     document.getElementById('bidLabel').textContent = m === 'pay' ? 'Your Bid Amount' : 'Your Max Budget (out the door)';
@@ -953,7 +979,7 @@
 
   // ---- clear ----
   document.getElementById('clearBtn').addEventListener('click', function() {
-    modeValues = { pay: '', bid: '' };
+    tabState = { pay: blankTab(), bid: blankTab() };
     bidEl.value = '';
     retailEl.value = '';
     macbucksEl.value = '';
@@ -990,7 +1016,8 @@
 
   document.getElementById('carryChip').addEventListener('click', function() {
     var otherMode = mode === 'pay' ? 'bid' : 'pay';
-    bidEl.value = modeValues[otherMode] || '';
+    tabState[mode] = Object.assign({}, tabState[otherMode]);
+    applyTab(mode);
     calculate();
     bidEl.focus();
   });
@@ -1011,11 +1038,11 @@
       } else if (!loc || !setLocationByLoc(loc)) {
         setLocationByLoc(getDefaultLoc());
       }
-      if (p.get('b')) modeValues[targetMode] = p.get('b');
-      if (p.get('a')) assuranceEl.value = p.get('a');
-      if (p.get('mb')) macbucksEl.value = p.get('mb');
-      if (p.get('tf') === '1') transferEl.checked = true;
-      if (p.get('r')) retailEl.value = p.get('r');
+      if (p.get('b')) tabState[targetMode].bid = p.get('b');
+      if (p.get('a')) tabState[targetMode].assurance = p.get('a');
+      if (p.get('mb')) tabState[targetMode].macbucks = p.get('mb');
+      if (p.get('tf') === '1') tabState[targetMode].transfer = true;
+      if (p.get('r')) tabState[targetMode].retail = p.get('r');
       if (p.get('p')) premiumRateEl.value = p.get('p');
       if (p.get('lf')) lotFeeEl.value = p.get('lf');
       if (p.get('a') || p.get('mb') || p.get('tf') === '1' || p.get('p') || p.get('lf')) openMoreOptions(true, false);
@@ -1024,7 +1051,8 @@
     }
 
     updateDefaultBtn();
-    bidEl.value = modeValues[targetMode]; // seed before setMode so carry-over can't stomp URL params
+    mode = targetMode; // set before setMode so carry-over can't stomp URL params
+    applyTab(targetMode);
     setMode(targetMode);
   })();
 
