@@ -2,7 +2,7 @@
 // Bump the version on every deploy so users pick up the new build.
 // Live uses stale-while-revalidate: instant loads on warehouse signal;
 // new deploys appear on the second visit. (Beta uses network-first.)
-var CACHE = 'macbid-calc-v3';
+var CACHE = 'macbid-calc-v4';
 var ASSETS = [
   './',
   './index.html',
