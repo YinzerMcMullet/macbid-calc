@@ -542,9 +542,9 @@
         <option value="6.75" data-loc="akron-oh">Akron &mdash; 6.75%</option>
         <option value="6.75" data-loc="warren-oh">Warren &mdash; 6.75%</option>
         <option value="7.5" data-loc="boardman-oh">Boardman &mdash; 7.50%</option>
+        <option value="7.25" data-loc="bridgeport-oh">Bridgeport &mdash; 7.25%</option>
       </optgroup>
       <optgroup label="Pennsylvania &mdash; Allegheny Co. (7%)">
-        <option value="7" data-loc="mckees-pa">McKees Rocks</option>
         <option value="7" data-loc="robinson-pa">Robinson</option>
         <option value="7" data-loc="pittsburgh-mills-pa">Pittsburgh Mills (Tarentum)</option>
         <option value="7" data-loc="monroeville-pa">Monroeville</option>
@@ -552,13 +552,13 @@
       <optgroup label="Pennsylvania &mdash; Other Counties (6%)">
         <option value="6" data-loc="beaver-pa">Beaver Falls</option>
         <option value="6" data-loc="butler-pa">Butler</option>
+        <option value="6" data-loc="butler-yb-pa">Butler - Yinz Binz</option>
         <option value="6" data-loc="washington-pa">Washington</option>
-        <option value="6" data-loc="washington-bb-pa">Washington Big Box</option>
         <option value="6" data-loc="uniontown-pa">Uniontown</option>
       </optgroup>
       <optgroup label="South Carolina">
         <option value="7" data-loc="anderson-sc">Anderson &mdash; 7.00%</option>
-        <option value="7" data-loc="cowpens-sc">Cowpens &mdash; 7.00%</option>
+        <option value="7" data-loc="cowpens-sc">Spartanburg (Cowpens) &mdash; 7.00%</option>
         <option value="6" data-loc="greenville-sc">Greenville &mdash; 6.00%</option>
         <option value="7" data-loc="rockhill-sc">Rock Hill &mdash; 7.00%</option>
       </optgroup>
@@ -683,7 +683,7 @@
   </div>
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.1-beta.11</div>
+  <div class="version">v2.1-beta.12</div>
 </div>
 
 <script>
@@ -1219,8 +1219,8 @@
       if (p.get('p')) premiumRateEl.value = p.get('p');
       if (p.get('lf')) lotFeeEl.value = p.get('lf');
       if (p.get('a') || p.get('mb') || p.get('tf') === '1' || p.get('p') || p.get('lf')) openMoreOptions(true, false);
-    } else {
-      setLocationByLoc(getDefaultLoc());
+    } else if (!setLocationByLoc(getDefaultLoc())) {
+      setLocationByLoc(DEFAULT_LOC); // saved default points at a removed location — fall back to Butler
     }
 
     updateDefaultBtn();
