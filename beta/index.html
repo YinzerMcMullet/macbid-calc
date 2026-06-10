@@ -609,7 +609,7 @@
   <!-- tip jar goes here (Phase 3d, pending accounts from Justin) -->
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.1-beta.5</div>
+  <div class="version">v2.1-beta.6</div>
 </div>
 
 <script>
@@ -899,7 +899,7 @@
   function updateStayTags() {
     document.querySelectorAll('.stay-tag').forEach(function(btn) {
       var f = btn.getAttribute('data-f');
-      btn.textContent = stays[f] ? 'stays' : 'per tab';
+      btn.textContent = stays[f] ? 'both tabs' : 'per tab';
       btn.classList.toggle('on', !!stays[f]);
     });
   }
