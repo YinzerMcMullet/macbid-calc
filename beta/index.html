@@ -827,7 +827,7 @@
   </div>
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.3-beta.1</div>
+  <div class="version">v2.3-beta.2</div>
 </div>
 
 <script>
@@ -1477,9 +1477,19 @@
     return lines.join('\n');
   }
 
+  // Sharing pitches the app with install steps; the link itself carries the numbers.
+  // (buildShareText still powers the report-a-fee-issue email body.)
+  function buildAppShareText() {
+    return "Yinzer McMullet's Mac Bid Checker — know your real cost before you bid.\n\n" +
+      "Install it like an app (free):\n" +
+      "iPhone: open the link in Safari → Share → Add to Home Screen\n" +
+      "Android: open in Chrome → menu (⋮) → Add to Home screen / Install\n" +
+      "Desktop: Chrome or Edge → install icon at the right end of the address bar";
+  }
+
   shareBtn.addEventListener('click', function() {
     var url = buildShareUrl();
-    var text = buildShareText();
+    var text = buildAppShareText();
     if (navigator.share) {
       navigator.share({ title: "Yinzer McMullet's Mac Bid Checker", text: text, url: url }).catch(function() {});
     } else {
