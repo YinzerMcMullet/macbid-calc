@@ -158,6 +158,27 @@
     cursor: pointer;
   }
   .carry-chip.show { display: inline-block; }
+  .stay-tag {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    border: 1px solid #333;
+    border-radius: 10px;
+    color: #666;
+    font-size: .62rem;
+    padding: 2px 9px;
+    cursor: pointer;
+    letter-spacing: .5px;
+  }
+  .stay-tag.on {
+    color: #FFB81C;
+    border-color: rgba(255,184,28,.5);
+  }
+  .checkbox-group .stay-tag {
+    position: static;
+    margin-left: auto;
+  }
   .trust {
     text-align: center;
     margin-top: 18px;
@@ -422,7 +443,8 @@
   </div>
 
   <div class="input-group">
-    <label for="bid" id="bidLabel">Your Bid Amount</label>
+    <label for="bid"><span id="bidLabel">Your Bid Amount</span></label>
+    <button type="button" class="stay-tag" data-f="bid">per tab</button>
     <span class="dollar">$</span>
     <input type="text" inputmode="decimal" id="bid" class="dollar-input" placeholder="0.00" autofocus>
     <button class="carry-chip" id="carryChip" type="button"></button>
@@ -501,6 +523,7 @@
   <div class="more-body" id="moreBody">
     <div class="input-group">
       <label for="assurance">Buyers Assurance Fee (optional)</label>
+      <button type="button" class="stay-tag" data-f="assurance">per tab</button>
       <span class="dollar">$</span>
       <input type="text" inputmode="decimal" id="assurance" class="dollar-input" placeholder="0.00">
       <div class="hint">Check the listing &mdash; usually ~3% of retail price</div>
@@ -509,20 +532,16 @@
     <div class="checkbox-group">
       <input type="checkbox" id="transferFee">
       <label for="transferFee">Transfer Fee ($10.00)</label>
+      <button type="button" class="stay-tag" data-f="transfer">per tab</button>
       <div class="hint">Per item, within same district</div>
     </div>
 
     <div class="input-group">
       <label for="macbucks">Mac Bucks (optional)</label>
+      <button type="button" class="stay-tag" data-f="macbucks">per tab</button>
       <span class="dollar">$</span>
       <input type="text" inputmode="decimal" id="macbucks" class="dollar-input" placeholder="0.00">
       <div class="hint">Applied after tax</div>
-    </div>
-
-    <div class="checkbox-group">
-      <input type="checkbox" id="carryToggle">
-      <label for="carryToggle">Keep my numbers when switching tabs</label>
-      <div class="hint">Off = each tab is its own worksheet</div>
     </div>
 
     <div class="advanced-label">Advanced &mdash; fee rates</div>
@@ -541,6 +560,7 @@
 
   <div class="input-group">
     <label for="retail">Retail Price (optional)</label>
+    <button type="button" class="stay-tag" data-f="retail">per tab</button>
     <span class="dollar">$</span>
     <input type="text" inputmode="decimal" id="retail" class="dollar-input" placeholder="0.00">
   </div>
@@ -589,7 +609,7 @@
   <!-- tip jar goes here (Phase 3d, pending accounts from Justin) -->
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.1-beta.4</div>
+  <div class="version">v2.1-beta.5</div>
 </div>
 
 <script>
@@ -602,7 +622,9 @@
   const customTaxEl = document.getElementById('customTax');
   const premiumRateEl = document.getElementById('premiumRate');
   const lotFeeEl = document.getElementById('lotFee');
-  const carryEl = document.getElementById('carryToggle');
+  // Per-number tab behavior: true = "stays" (shared across tabs), false = "per tab"
+  const STAY_FIELDS = ['bid', 'assurance', 'macbucks', 'transfer', 'retail'];
+  var stays = { bid: false, assurance: false, macbucks: false, transfer: false, retail: false };
   // Mac.bid standard rates — the verified defaults. Advanced override is session-only by design.
   const DEFAULT_PREMIUM = 0.15;
   const DEFAULT_LOT_FEE = 3.00;
@@ -815,7 +837,7 @@
     var otherMode = mode === 'pay' ? 'bid' : 'pay';
     var otherVal = (tabState[otherMode].bid || '').trim();
     var chip = document.getElementById('carryChip');
-    if (!carryEl.checked && bidEl.value.trim() === '' && (parseFloat(otherVal) || 0) > 0) {
+    if (!stays.bid && bidEl.value.trim() === '' && (parseFloat(otherVal) || 0) > 0) {
       chip.textContent = 'Use $' + otherVal + ' here?';
       chip.classList.add('show');
     } else {
@@ -827,9 +849,10 @@
 
   // ---- mode tabs ----
   function setMode(m) {
-    if (carryEl.checked && m !== mode) {
+    if (m !== mode) {
       snapshotTab();
-      tabState[m] = Object.assign({}, tabState[mode]); // carry-over: the whole worksheet follows you
+      var from = tabState[mode], to = tabState[m];
+      STAY_FIELDS.forEach(function(f) { if (stays[f]) to[f] = from[f]; }); // "stays" numbers follow you
     }
     mode = m;
     applyTab(m);
@@ -860,14 +883,42 @@
     if (localStorage.getItem('macbid-more-open') === '1') openMoreOptions(true, false);
   } catch (e) {}
 
-  // ---- carry-over preference ----
+  // ---- per-number stays/per-tab tags ----
   try {
-    if (localStorage.getItem('macbid-carry') === '1') carryEl.checked = true;
+    var savedStays = localStorage.getItem('macbid-stays');
+    if (savedStays) {
+      var parsedStays = JSON.parse(savedStays);
+      STAY_FIELDS.forEach(function(f) { if (typeof parsedStays[f] === 'boolean') stays[f] = parsedStays[f]; });
+    } else if (localStorage.getItem('macbid-carry') === '1') {
+      STAY_FIELDS.forEach(function(f) { stays[f] = true; }); // migrate the old all-or-nothing toggle
+    }
   } catch (e) {}
-  carryEl.addEventListener('change', function() {
-    try { localStorage.setItem('macbid-carry', carryEl.checked ? '1' : '0'); } catch (e) {}
-    calculate();
+  function saveStays() {
+    try { localStorage.setItem('macbid-stays', JSON.stringify(stays)); } catch (e) {}
+  }
+  function updateStayTags() {
+    document.querySelectorAll('.stay-tag').forEach(function(btn) {
+      var f = btn.getAttribute('data-f');
+      btn.textContent = stays[f] ? 'stays' : 'per tab';
+      btn.classList.toggle('on', !!stays[f]);
+    });
+  }
+  document.querySelectorAll('.stay-tag').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault(); // keep the tap from activating the field's label/checkbox
+      var f = btn.getAttribute('data-f');
+      stays[f] = !stays[f];
+      if (stays[f]) {
+        snapshotTab();
+        var other = mode === 'pay' ? 'bid' : 'pay';
+        tabState[other][f] = tabState[mode][f]; // flipping to "stays" syncs the number across tabs now
+      }
+      saveStays();
+      updateStayTags();
+      calculate();
+    });
   });
+  updateStayTags();
 
   // ---- default location ----
   var defaultBtn = document.getElementById('setDefaultBtn');
