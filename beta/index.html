@@ -657,7 +657,7 @@
   </div>
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.1-beta.7</div>
+  <div class="version">v2.1-beta.8</div>
 </div>
 
 <script>
@@ -685,7 +685,7 @@
   function getLotFee() {
     var v = parseFloat(lotFeeEl.value);
     if (isNaN(v)) return DEFAULT_LOT_FEE;
-    return Math.min(999, Math.max(0, v));
+    return r2(Math.min(999, Math.max(0, v)));
   }
   function ratesAreCustom() {
     return Math.abs(getPremiumRate() - DEFAULT_PREMIUM) > 1e-9 || Math.abs(getLotFee() - DEFAULT_LOT_FEE) > 1e-9;
@@ -721,6 +721,11 @@
     return '$' + n.toFixed(2);
   }
 
+  // Round to cents, half-up, like MacBid's own invoice lines (tiny epsilon absorbs float drift).
+  function r2(n) {
+    return Math.round(n * 100 + 1e-6) / 100;
+  }
+
   function getTaxRate() {
     if (taxSelectEl.value === 'custom') {
       return (parseFloat(customTaxEl.value) || 0) / 100;
@@ -747,10 +752,10 @@
 
   function calculate() {
     snapshotTab();
-    const entered = parseFloat(bidEl.value) || 0;
-    const retail = parseFloat(retailEl.value) || 0;
-    const mb = parseFloat(macbucksEl.value) || 0;
-    const assurance = parseFloat(assuranceEl.value) || 0;
+    const entered = r2(parseFloat(bidEl.value) || 0);
+    const retail = r2(parseFloat(retailEl.value) || 0);
+    const mb = r2(parseFloat(macbucksEl.value) || 0);
+    const assurance = r2(parseFloat(assuranceEl.value) || 0);
     const taxRate = getTaxRate();
     const transfer = transferEl.checked ? 10 : 0;
     const premiumRate = getPremiumRate();
@@ -766,6 +771,15 @@
       const taxableAllowed = (budget + mb - assurance) / (1 + taxRate);
       const rawBid = (taxableAllowed - lotFee - transfer) / (1 + premiumRate);
       bid = Math.floor(rawBid + 1e-9); // epsilon: exact-boundary budgets must not lose a dollar to float noise
+      // Verify the candidate against the line-rounded forward math; per-line rounding can
+      // shift the real total a cent, and "bid up to" must never overshoot the budget.
+      const lineTotal = function(b) {
+        const p = r2(b * premiumRate);
+        const s = r2(b + p + lotFee + assurance + transfer);
+        const tx = r2((s - assurance) * taxRate);
+        return Math.max(0, r2(r2(s + tx) - mb));
+      };
+      while (bid > 0 && lineTotal(bid) > budget + 1e-9) bid--;
       if (budget <= 0) {
         bid = 0;
       } else if (bid < 1) {
@@ -774,12 +788,14 @@
       }
     }
 
-    const premium = bid * premiumRate;
-    const subtotal = bid + premium + lotFee + assurance + transfer;
-    // MacBid does not tax Buyer Assurance (verified against real invoices, 2026-06-09)
-    const tax = (subtotal - assurance) * taxRate;
-    const totalBeforeMb = subtotal + tax;
-    const total = Math.max(0, totalBeforeMb - mb);
+    // Every line rounds to cents like MacBid's own billing, so the rows on screen
+    // always sum exactly to the totals on screen.
+    // MacBid does not tax Buyer Assurance (verified against real invoices, 2026-06-09).
+    const premium = r2(bid * premiumRate);
+    const subtotal = r2(bid + premium + lotFee + assurance + transfer);
+    const tax = r2((subtotal - assurance) * taxRate);
+    const totalBeforeMb = r2(subtotal + tax);
+    const total = Math.max(0, r2(totalBeforeMb - mb));
 
     document.getElementById('outBid').textContent = fmt(bid);
     document.getElementById('outPremium').textContent = fmt(premium);
