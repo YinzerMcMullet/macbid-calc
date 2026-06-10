@@ -657,7 +657,7 @@
   </div>
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.1-beta.8</div>
+  <div class="version">v2.1-beta.9</div>
 </div>
 
 <script>
@@ -779,7 +779,12 @@
         const tx = r2((s - assurance) * taxRate);
         return Math.max(0, r2(r2(s + tx) - mb));
       };
+      if (bid < 0) bid = 0;
       while (bid > 0 && lineTotal(bid) > budget + 1e-9) bid--;
+      // Line-rounding can also make the NEXT dollar affordable (e.g. $83.26 budget w/ transfer
+      // @ 6%: continuous math says 56.9975, but $57 line-rounds to exactly $83.26) — climb up.
+      var bumpGuard = 0;
+      while (bumpGuard++ < 5 && lineTotal(bid + 1) <= budget + 1e-9) bid++;
       if (budget <= 0) {
         bid = 0;
       } else if (bid < 1) {
