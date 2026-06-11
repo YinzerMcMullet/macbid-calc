@@ -818,7 +818,7 @@
     <div class="tipjar-header" style="margin-top:14px">Find the Yinzer</div>
     <div class="tip-row">
       <a class="tip-pill" href="https://x.com/YinzerMcmullet" target="_blank" rel="noopener">X / Twitter</a>
-      <a class="tip-pill" href="https://www.tiktok.com/@yinzermcmullet" target="_blank" rel="noopener">TikTok</a>
+      <a class="tip-pill" href="https://www.tiktok.com/@mcmullet19" target="_blank" rel="noopener">TikTok</a>
     </div>
   </div>
 
@@ -848,7 +848,7 @@
   </div>
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.3</div>
+  <div class="version">v2.3.1</div>
 
   <button type="button" class="update-toast" id="updateToast" style="display:none">New version just dropped, yinz &mdash; tap to update</button>
 </div>
@@ -1335,7 +1335,7 @@
 
   document.getElementById('feeIssueBtn').addEventListener('click', function() {
     var body = 'I think a fee or tax rate is off:\n\n' + buildShareText() + '\n\nWhat I saw on MacBid:\n';
-    location.href = 'mailto:yinzermcmullet@gmail.com?subject=' + encodeURIComponent('Fee issue report') + '&body=' + encodeURIComponent(body);
+    window.open('https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=' + encodeURIComponent('Fee issue report') + '&body=' + encodeURIComponent(body), '_blank');
   });
 
   document.getElementById('pinPopupOk').addEventListener('click', function() {
