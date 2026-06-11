@@ -1,8 +1,8 @@
 // MacBid Calculator service worker — offline support (LIVE site)
 // Bump the version on every deploy so users pick up the new build.
 // Live uses stale-while-revalidate: instant loads on warehouse signal;
-// new deploys appear on the second visit. (Beta uses network-first.)
-var CACHE = 'macbid-calc-v5';
+// the in-app update banner offers one-tap refresh when a new build lands.
+var CACHE = 'macbid-calc-v6';
 var ASSETS = [
   './',
   './index.html',
