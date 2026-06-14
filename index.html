@@ -848,7 +848,7 @@
   </div>
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.3.1</div>
+  <div class="version">v2.3.2</div>
 
   <button type="button" class="update-toast" id="updateToast" style="display:none">New version just dropped, yinz &mdash; tap to update</button>
 </div>
@@ -1639,6 +1639,15 @@
       location.reload();
     });
   }
+
+  // Count home-screen installs (fires once when someone adds it to their home screen)
+  window.addEventListener('appinstalled', function() {
+    if (window.goatcounter && window.goatcounter.count) {
+      window.goatcounter.count({ path: 'pwa-install', title: 'Home screen install', event: true });
+    }
+  });
 </script>
+<script data-goatcounter="https://yinzermcmullet.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
