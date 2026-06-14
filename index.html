@@ -309,6 +309,144 @@
     line-height: 1.5;
     margin-bottom: 10px;
   }
+  .save-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: .9rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: 2px solid #FFB81C;
+    background: #FFB81C;
+    color: #0a0a0a;
+    -webkit-appearance: none;
+  }
+  .save-btn.saved { background: #34d399; border-color: #34d399; }
+  .mylist-btn {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 11px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    background: #1a1a1a;
+    color: #ccc;
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-appearance: none;
+  }
+  .mylist-btn:hover, .mylist-btn:active { border-color: #FFB81C; color: #FFB81C; }
+  .mylist-btn .count { color: #FFB81C; }
+  .save-card label {
+    display: block;
+    font-size: .8rem;
+    color: #999;
+    margin: 10px 0 4px;
+  }
+  .save-card input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 16px;
+    -webkit-appearance: none;
+  }
+  .save-card .save-summary {
+    font-size: .75rem;
+    color: #777;
+    margin: 12px 0;
+    line-height: 1.5;
+  }
+  .save-card .save-cancel {
+    background: none;
+    border: 1px solid #333;
+    color: #999;
+    margin-top: 8px;
+  }
+  .list-overlay {
+    position: fixed;
+    inset: 0;
+    background: #0a0a0a;
+    z-index: 60;
+    display: none;
+    flex-direction: column;
+    padding: calc(16px + env(safe-area-inset-top)) 14px calc(16px + env(safe-area-inset-bottom));
+  }
+  .list-overlay.show { display: flex; }
+  .list-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .list-head h2 { color: #FFB81C; font-size: 1.2rem; }
+  .list-close {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 4px 10px;
+  }
+  .list-controls { margin-bottom: 12px; }
+  .list-controls select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    background: #1a1a1a;
+    color: #ccc;
+    font-size: 14px;
+    -webkit-appearance: none;
+  }
+  .list-items { flex: 1; overflow-y: auto; }
+  .list-empty { text-align: center; color: #777; padding: 40px 16px; font-size: .9rem; }
+  .item-card {
+    background: #161616;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .item-name { font-weight: 700; color: #fff; font-size: .95rem; }
+  .item-status {
+    font-size: .65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    padding: 3px 9px;
+    border-radius: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    border: 1px solid;
+  }
+  .st-Watching { color: #60A5FA; border-color: #60A5FA; }
+  .st-Won { color: #FBBF24; border-color: #FBBF24; }
+  .st-Passed { color: #777; border-color: #555; }
+  .st-PickedUp { color: #FFB81C; border-color: #FFB81C; }
+  .st-Resold { color: #34d399; border-color: #34d399; }
+  .item-result { color: #FFB81C; font-size: .9rem; margin-top: 6px; }
+  .item-meta { color: #999; font-size: .75rem; margin-top: 4px; }
+  .item-link { color: #60A5FA; font-size: .75rem; text-decoration: none; }
+  .item-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .item-actions button, .item-actions a {
+    flex: 1;
+    text-align: center;
+    padding: 7px;
+    border: 1px solid #333;
+    border-radius: 6px;
+    background: #1a1a1a;
+    color: #ccc;
+    font-size: .72rem;
+    cursor: pointer;
+    text-decoration: none;
+    -webkit-appearance: none;
+  }
+  .item-actions .del { color: #ff6b6b; border-color: #43302f; }
   .more-toggle {
     display: flex;
     justify-content: space-between;
@@ -789,9 +927,11 @@
   <div class="markup-note" id="markupNote"></div>
 
   <div class="btn-row">
+    <button class="save-btn" id="saveBtn" type="button">&#9733; Save</button>
     <button class="share-btn" id="shareBtn" type="button">Share</button>
     <button class="clear-btn" id="clearBtn" type="button">Clear</button>
   </div>
+  <button class="mylist-btn" id="myListBtn" type="button">My List <span class="count" id="myListCount"></span></button>
 
   <div class="savings" id="savingsSection">
     <div class="savings-header">vs. Retail</div>
@@ -822,6 +962,34 @@
     </div>
   </div>
 
+  <div class="pin-popup" id="savePopup" style="display:none">
+    <div class="pin-popup-card save-card">
+      <h3>Save to your list</h3>
+      <label for="saveName">Item name</label>
+      <input type="text" id="saveName" placeholder="e.g. DEWALT shop vac">
+      <label for="saveUrl">MacBid link (optional)</label>
+      <input type="text" inputmode="url" id="saveUrl" placeholder="paste the listing link">
+      <div class="save-summary" id="saveSummary"></div>
+      <button id="saveConfirm" type="button">Save it</button>
+      <button id="saveCancel" class="save-cancel" type="button">Cancel</button>
+    </div>
+  </div>
+
+  <div class="list-overlay" id="listOverlay">
+    <div class="list-head">
+      <h2>My List</h2>
+      <button class="list-close" id="listClose" type="button" aria-label="Close">&times;</button>
+    </div>
+    <div class="list-controls">
+      <select id="listSort">
+        <option value="newest">Newest first</option>
+        <option value="value">Best value first</option>
+        <option value="status">By status</option>
+      </select>
+    </div>
+    <div class="list-items" id="listItems"></div>
+  </div>
+
   <div class="pin-popup" id="howPopup" style="display:none">
     <div class="pin-popup-card how-card">
       <img src="logo.png" alt="Yinzer McMullet" class="how-avatar">
@@ -848,7 +1016,7 @@
   </div>
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.3.2</div>
+  <div class="version">v2.4</div>
 
   <button type="button" class="update-toast" id="updateToast" style="display:none">New version just dropped, yinz &mdash; tap to update</button>
 </div>
@@ -1334,6 +1502,7 @@
   });
 
   document.getElementById('feeIssueBtn').addEventListener('click', function() {
+    // Gmail compose in a tab — mailto: silently does nothing on machines with no mail app
     var body = 'I think a fee or tax rate is off:\n\n' + buildShareText() + '\n\nWhat I saw on MacBid:\n';
     window.open('https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=' + encodeURIComponent('Fee issue report') + '&body=' + encodeURIComponent(body), '_blank');
   });
@@ -1520,6 +1689,184 @@
                                  .catch(function() { shareConfirm('Copy failed'); });
     }
   });
+
+  // ---- watchlist (saved items, on-device) ----
+  var WL_KEY = 'macbid-watchlist';
+  var STATUSES = ['Watching', 'Won', 'Passed', 'Picked Up', 'Resold'];
+  function loadWatch() {
+    try { return JSON.parse(localStorage.getItem(WL_KEY)) || []; } catch (e) { return []; }
+  }
+  function saveWatch(arr) {
+    try { localStorage.setItem(WL_KEY, JSON.stringify(arr)); } catch (e) {}
+  }
+  function updateMyListCount() {
+    var n = loadWatch().length;
+    document.getElementById('myListCount').textContent = n ? '(' + n + ')' : '';
+  }
+
+  function txt(id) { return document.getElementById(id).textContent; }
+
+  function currentResultLine() {
+    if (mode === 'pay') {
+      var paid = (parseFloat(macbucksEl.value) || 0) > 0 ? txt('outFinal') : txt('outTotal');
+      return 'Bid ' + (bidEl.value ? '$' + bidEl.value : '—') + ' → You Pay ' + paid;
+    }
+    if (mode === 'bid') {
+      return 'Budget ' + (bidEl.value ? '$' + bidEl.value : '—') + ' → Bid up to ' + txt('outMaxBid');
+    }
+    return 'Resale ' + (resaleEl.value ? '$' + resaleEl.value : '—') + ' → Bid up to ' + txt('outFlipBid') + ' · ' + txt('outProfit') + ' profit';
+  }
+
+  // "Best value" sort metric: savings $ in pay/bid (when retail given), profit $ in flip
+  function currentMetric() {
+    if (mode === 'flip') return parseFloat(txt('outProfit').replace(/[^0-9.\-]/g, '')) || 0;
+    var retail = parseFloat(retailEl.value) || 0;
+    if (retail <= 0) return 0;
+    var paid = parseFloat((((parseFloat(macbucksEl.value) || 0) > 0) ? txt('outFinal') : txt('outTotal')).replace(/[^0-9.\-]/g, '')) || 0;
+    return r2(retail - paid);
+  }
+
+  function captureItem(name, url) {
+    snapshotTab();
+    var sel = taxSelectEl.options[taxSelectEl.selectedIndex];
+    return {
+      id: 'w' + Date.now(),
+      name: name || 'Untitled',
+      url: (url || '').trim(),
+      mode: mode,
+      loc: sel ? sel.getAttribute('data-loc') : '',
+      locLabel: sel ? sel.text.trim().split('—')[0].trim() : '',
+      taxLabel: txt('taxLabel'),
+      result: currentResultLine(),
+      metric: currentMetric(),
+      status: 'Watching',
+      ts: Date.now(),
+      fields: {
+        bid: bidEl.value, assurance: assuranceEl.value, macbucks: macbucksEl.value,
+        transfer: transferEl.checked, retail: retailEl.value,
+        premiumRate: premiumRateEl.value, lotFee: lotFeeEl.value, customTax: customTaxEl.value,
+        resale: resaleEl.value, platform: platformEl.value, platPct: platPctEl.value,
+        platFix: platFixEl.value, ship: shipEl.value, repair: repairEl.value,
+        gas: gasEl.value, target: targetEl.value
+      }
+    };
+  }
+
+  // ---- save modal ----
+  var saveBtn = document.getElementById('saveBtn');
+  var savePopup = document.getElementById('savePopup');
+  saveBtn.addEventListener('click', function() {
+    var loc = taxSelectEl.options[taxSelectEl.selectedIndex];
+    document.getElementById('saveSummary').textContent = currentResultLine() + '  ·  Location: ' +
+      (loc ? loc.text.trim().split('—')[0].trim() : '') + ' · ' + txt('taxLabel') + '% tax';
+    document.getElementById('saveName').value = '';
+    document.getElementById('saveUrl').value = '';
+    savePopup.style.display = 'flex';
+    document.getElementById('saveName').focus();
+  });
+  document.getElementById('saveCancel').addEventListener('click', function() {
+    savePopup.style.display = 'none';
+  });
+  document.getElementById('saveConfirm').addEventListener('click', function() {
+    var name = document.getElementById('saveName').value.trim() || 'Untitled';
+    var url = document.getElementById('saveUrl').value;
+    var arr = loadWatch();
+    arr.push(captureItem(name, url));
+    saveWatch(arr);
+    savePopup.style.display = 'none';
+    updateMyListCount();
+    saveBtn.classList.add('saved');
+    saveBtn.innerHTML = '&#10003; Saved';
+    setTimeout(function() { saveBtn.classList.remove('saved'); saveBtn.innerHTML = '&#9733; Save'; }, 1500);
+  });
+
+  // ---- list overlay ----
+  var listOverlay = document.getElementById('listOverlay');
+  function openList() { renderList(); listOverlay.classList.add('show'); }
+  function closeList() { listOverlay.classList.remove('show'); }
+  document.getElementById('myListBtn').addEventListener('click', openList);
+  document.getElementById('listClose').addEventListener('click', closeList);
+  document.getElementById('listSort').addEventListener('change', renderList);
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function renderList() {
+    var arr = loadWatch();
+    var sort = document.getElementById('listSort').value;
+    if (sort === 'value') arr.sort(function(a, b) { return (b.metric || 0) - (a.metric || 0); });
+    else if (sort === 'status') arr.sort(function(a, b) { return STATUSES.indexOf(a.status) - STATUSES.indexOf(b.status); });
+    else arr.sort(function(a, b) { return b.ts - a.ts; });
+
+    var box = document.getElementById('listItems');
+    if (!arr.length) {
+      box.innerHTML = '<div class="list-empty">No saved items yet.<br>Run a calculation and tap &#9733; Save.</div>';
+      updateMyListCount();
+      return;
+    }
+    box.innerHTML = arr.map(function(it) {
+      var stClass = 'st-' + it.status.replace(/\s+/g, '');
+      var link = it.url ? '<a class="item-link" href="' + esc(it.url) + '" target="_blank" rel="noopener">Open on MacBid &#8599;</a>' : '';
+      return '<div class="item-card">' +
+        '<div class="item-top"><span class="item-name">' + esc(it.name) + '</span>' +
+        '<span class="item-status ' + stClass + '" data-status="' + it.id + '">' + esc(it.status) + '</span></div>' +
+        '<div class="item-result">' + esc(it.result) + '</div>' +
+        '<div class="item-meta">' + esc(it.locLabel) + ' · ' + esc(it.taxLabel) + '% tax</div>' +
+        (link ? '<div class="item-meta">' + link + '</div>' : '') +
+        '<div class="item-actions">' +
+        '<button data-load="' + it.id + '">Load</button>' +
+        '<button data-cycle="' + it.id + '">Next status</button>' +
+        '<button class="del" data-del="' + it.id + '">Delete</button>' +
+        '</div></div>';
+    }).join('');
+    updateMyListCount();
+  }
+
+  document.getElementById('listItems').addEventListener('click', function(e) {
+    var el = e.target.closest('[data-load],[data-cycle],[data-del],[data-status]');
+    if (!el) return;
+    if (el.hasAttribute('data-load')) loadItem(el.getAttribute('data-load'));
+    else if (el.hasAttribute('data-del')) {
+      saveWatch(loadWatch().filter(function(w) { return w.id !== el.getAttribute('data-del'); }));
+      renderList();
+    } else {
+      var id = el.getAttribute('data-cycle') || el.getAttribute('data-status');
+      var arr = loadWatch();
+      var i = -1;
+      for (var k = 0; k < arr.length; k++) { if (arr[k].id === id) { i = k; break; } }
+      if (i >= 0) {
+        arr[i].status = STATUSES[(STATUSES.indexOf(arr[i].status) + 1) % STATUSES.length];
+        saveWatch(arr); renderList();
+      }
+    }
+  });
+
+  function loadItem(id) {
+    var arr = loadWatch(), it = null;
+    for (var k = 0; k < arr.length; k++) { if (arr[k].id === id) { it = arr[k]; break; } }
+    if (!it) return;
+    var f = it.fields;
+    if (it.loc === 'custom') {
+      setLocationByLoc('custom'); customTaxEl.value = f.customTax || ''; customTaxEl.classList.add('show');
+    } else if (it.loc) { setLocationByLoc(it.loc); }
+    premiumRateEl.value = f.premiumRate || ''; lotFeeEl.value = f.lotFee || '';
+    resaleEl.value = f.resale || ''; if (f.platform) platformEl.value = f.platform;
+    platPctEl.value = f.platPct || '13.25'; platFixEl.value = f.platFix || '0.30';
+    shipEl.value = f.ship || ''; repairEl.value = f.repair || ''; gasEl.value = f.gas || ''; targetEl.value = f.target || '';
+    tabState[it.mode] = {
+      bid: f.bid || '', assurance: f.assurance || '', macbucks: f.macbucks || '',
+      transfer: !!f.transfer, retail: f.retail || ''
+    };
+    closeList();
+    updateDefaultBtn();
+    setMode(it.mode);
+    window.scrollTo(0, 0);
+  }
+
+  updateMyListCount();
 
   // ---- clear ----
   document.getElementById('clearBtn').addEventListener('click', function() {
