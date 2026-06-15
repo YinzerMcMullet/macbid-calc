@@ -1099,7 +1099,7 @@
   </div>
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.4.2</div>
+  <div class="version">v2.4.3</div>
 
   <button type="button" class="update-toast" id="updateToast" style="display:none">New version just dropped, yinz &mdash; tap to update</button>
   <div class="paste-toast" id="pasteToast" style="display:none"></div>
@@ -2242,6 +2242,13 @@
     mode = targetMode; // set before setMode so carry-over can't stomp URL params
     applyTab(targetMode);
     setMode(targetMode);
+
+    // ?paste=<mac.bid lot link> — auto-run paste-and-go on load (powers the bookmarklet / share links)
+    var pasteParam = p.get('paste');
+    if (pasteParam) {
+      try { pasteParam = decodeURIComponent(pasteParam); } catch (e) {}
+      doPaste(pasteParam);
+    }
   })();
 
   // ---- PWA: offline + add to home screen ----
