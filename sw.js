@@ -2,7 +2,7 @@
 // Bump the version on every deploy so users pick up the new build.
 // Live uses stale-while-revalidate: instant loads on warehouse signal;
 // the in-app update banner offers one-tap refresh when a new build lands.
-var CACHE = 'macbid-calc-v10';
+var CACHE = 'macbid-calc-v11';
 var ASSETS = [
   './',
   './index.html',

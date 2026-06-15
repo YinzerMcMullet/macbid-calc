@@ -1,6 +1,6 @@
 // MacBid Calculator service worker — offline support
 // Bump the version on every deploy so users pick up the new build.
-var CACHE = 'macbid-calc-beta-v28';
+var CACHE = 'macbid-calc-beta-v29';
 var ASSETS = [
   './',
   './index.html',
