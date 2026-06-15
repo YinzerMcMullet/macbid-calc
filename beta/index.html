@@ -353,6 +353,23 @@
   }
   .mylist-btn:hover, .mylist-btn:active { border-color: #FFB81C; color: #FFB81C; }
   .mylist-btn .count { color: #FFB81C; }
+  /* ---- day total ---- */
+  .day-add-btn {
+    display: block; width: 100%; margin-top: 10px; padding: 12px;
+    border-radius: 8px; border: 2px dashed rgba(255,184,28,.5);
+    background: #161616; color: #FFB81C; font-size: .9rem; font-weight: 600; cursor: pointer;
+  }
+  .day-add-btn:hover, .day-add-btn:active { border-style: solid; border-color: #FFB81C; }
+  .day-panel { margin-top: 14px; padding: 14px; border-radius: 10px; background: #141414; border: 1px solid #2a2a2a; }
+  .day-head { display: flex; justify-content: space-between; align-items: center; font-size: .75rem; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 6px; }
+  .day-head button { background: none; border: none; color: #777; font-size: .75rem; cursor: pointer; text-decoration: underline; }
+  .day-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid #222; font-size: .9rem; }
+  .day-row .d-label { color: #ccc; flex: 1; min-width: 0; }
+  .day-row .d-val { color: #fff; font-weight: 600; }
+  .day-row .d-rm { background: none; border: none; color: #ff6b6b; font-size: 1.15rem; cursor: pointer; padding: 0 4px; line-height: 1; }
+  .day-totals { margin-top: 10px; padding-top: 10px; border-top: 2px solid #FFB81C; }
+  .day-grand { display: flex; justify-content: space-between; font-size: 1.15rem; font-weight: 700; color: #FFB81C; }
+  .day-sub { display: flex; justify-content: space-between; font-size: .85rem; color: #34d399; margin-top: 4px; }
   .save-card label {
     display: block;
     font-size: .8rem;
@@ -1031,6 +1048,13 @@
   </div>
   <button class="mylist-btn" id="myListBtn" type="button">My List <span class="count" id="myListCount"></span></button>
 
+  <button class="day-add-btn" id="dayAddBtn" type="button" style="display:none">&#43; Add to day total</button>
+  <div class="day-panel" id="dayPanel" style="display:none">
+    <div class="day-head"><span>Your Pickup Day</span><button type="button" id="dayClear">Clear</button></div>
+    <div id="dayItems"></div>
+    <div class="day-totals" id="dayTotals"></div>
+  </div>
+
   <div class="savings" id="savingsSection">
     <div class="savings-header">vs. Retail</div>
     <div class="savings-row" id="savingsRow"><span class="label">Retail Price</span><span class="val" id="outRetail">$0.00</span></div>
@@ -1114,7 +1138,7 @@
   </div>
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.4-beta.4</div>
+  <div class="version">v2.4-beta.5</div>
 
   <button type="button" class="update-toast" id="updateToast" style="display:none">New version just dropped, yinz &mdash; tap to update</button>
   <div class="paste-toast" id="pasteToast" style="display:none"></div>
@@ -1468,6 +1492,8 @@
       chip.classList.remove('show');
     }
 
+    if (mode === 'pay') lastPay = { bid: entered, total: r2(mb > 0 ? total : totalBeforeMb), retail: retail };
+    updateDayAddBtn();
     updateUseBidButtons();
     maybeFlash(mode + '|' + fmt(totalBeforeMb) + '|' + fmt(total) + '|' + bid);
   }
@@ -1509,6 +1535,50 @@
   }
   document.getElementById('useMaxBid').addEventListener('click', function() { useBidValue('outMaxBid'); });
   document.getElementById('useFlipBid').addEventListener('click', function() { useBidValue('outFlipBid'); });
+
+  // ---- day total: tally a whole pickup day's worth of items (True Cost mode) ----
+  var DAY_KEY = 'macbid-day';
+  var lastPay = { bid: 0, total: 0, retail: 0 };
+  function getDayItems() { try { return JSON.parse(localStorage.getItem(DAY_KEY)) || []; } catch (e) { return []; } }
+  function saveDayItems(a) { try { localStorage.setItem(DAY_KEY, JSON.stringify(a)); } catch (e) {} }
+  function updateDayAddBtn() {
+    var lp = lastPay || {};
+    document.getElementById('dayAddBtn').style.display = (mode === 'pay' && lp.total > 0 && lp.bid > 0) ? '' : 'none';
+  }
+  function renderDay() {
+    var items = getDayItems();
+    var panel = document.getElementById('dayPanel');
+    if (!items.length) { panel.style.display = 'none'; return; }
+    panel.style.display = '';
+    var wrap = document.getElementById('dayItems');
+    wrap.innerHTML = '';
+    var tot = 0, ret = 0;
+    items.forEach(function(it, i) {
+      tot += it.total || 0; ret += it.retail || 0;
+      var row = document.createElement('div');
+      row.className = 'day-row';
+      var lbl = it.bid > 0 ? ('Bid ' + fmt(it.bid)) : ('Item ' + (i + 1));
+      row.innerHTML = '<span class="d-label">' + lbl + '</span><span class="d-val">' + fmt(it.total || 0) + '</span>';
+      var rm = document.createElement('button');
+      rm.className = 'd-rm'; rm.type = 'button'; rm.setAttribute('aria-label', 'Remove item'); rm.textContent = '×';
+      rm.addEventListener('click', function() { var a = getDayItems(); a.splice(i, 1); saveDayItems(a); renderDay(); });
+      row.appendChild(rm);
+      wrap.appendChild(row);
+    });
+    var save = ret - tot;
+    document.getElementById('dayTotals').innerHTML =
+      '<div class="day-grand"><span>Day Total (' + items.length + ')</span><span>' + fmt(tot) + '</span></div>' +
+      (ret > 0 ? '<div class="day-sub"><span>Retail ' + fmt(ret) + '</span><span>Save ' + fmt(Math.max(0, save)) + '</span></div>' : '');
+  }
+  document.getElementById('dayAddBtn').addEventListener('click', function() {
+    if (!(lastPay.total > 0 && lastPay.bid > 0)) return;
+    var a = getDayItems();
+    a.push({ bid: lastPay.bid, total: lastPay.total, retail: lastPay.retail });
+    saveDayItems(a); renderDay();
+    pasteToast('Added to day total — ' + a.length + (a.length === 1 ? ' item' : ' items'), true);
+  });
+  document.getElementById('dayClear').addEventListener('click', function() { saveDayItems([]); renderDay(); });
+  renderDay();
 
   // Platform presets fill the editable fee fields
   platformEl.addEventListener('change', function() {
