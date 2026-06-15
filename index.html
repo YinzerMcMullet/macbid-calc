@@ -690,6 +690,68 @@
     cursor: pointer;
     box-shadow: 0 6px 24px rgba(0,0,0,.6);
   }
+  /* ---- paste-and-go ---- */
+  .paste-btn {
+    display: block;
+    width: 100%;
+    margin: 0 0 16px;
+    padding: 13px;
+    border-radius: 10px;
+    border: 2px solid #FFB81C;
+    background: linear-gradient(180deg, #221c0e, #171717);
+    color: #FFB81C;
+    font-size: .95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: filter .15s;
+  }
+  .paste-btn:hover, .paste-btn:active { filter: brightness(1.18); }
+  .paste-btn:disabled { opacity: .6; cursor: default; }
+  .paste-row {
+    display: none;
+    gap: 8px;
+    margin: 0 0 16px;
+  }
+  .paste-row.show { display: flex; }
+  .paste-row textarea {
+    flex: 1;
+    min-width: 0;
+    padding: 11px;
+    font-size: 16px;
+    font-family: inherit;
+    line-height: 1.3;
+    border-radius: 8px;
+    border: 2px solid #333;
+    background: #1a1a1a;
+    color: #eee;
+    resize: none;
+  }
+  .paste-row textarea:focus { outline: none; border-color: #FFB81C; }
+  .paste-row button {
+    padding: 0 18px;
+    border-radius: 8px;
+    border: 2px solid #FFB81C;
+    background: #1a1a1a;
+    color: #FFB81C;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .paste-toast {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    z-index: 60;
+    padding: 13px;
+    background: #141414;
+    border: 1px solid #34d399;
+    border-radius: 10px;
+    color: #34d399;
+    font-size: .85rem;
+    font-weight: 600;
+    box-shadow: 0 6px 24px rgba(0,0,0,.6);
+  }
+  .paste-toast.err { border-color: #f87171; color: #f87171; }
 </style>
 </head>
 <body>
@@ -697,6 +759,12 @@
   <img src="logo.png" alt="Yinzer McMullet" style="display:block;margin:0 auto 12px;width:100px;height:auto">
   <h1>Yinzer McMullet's<br>Mac Bid Checker</h1>
   <div class="subtitle">See what you'll really pay before you bid</div>
+
+  <button type="button" class="paste-btn" id="pasteBtn">&#128203; Paste a Mac.bid listing</button>
+  <div class="paste-row" id="pasteRow">
+    <textarea id="pasteInput" rows="2" placeholder="paste the listing link &mdash; or the copied listing text"></textarea>
+    <button type="button" id="pasteGo">Go</button>
+  </div>
 
   <div class="tabs">
     <button class="tab active" id="tabPay" type="button">What will I pay?</button>
@@ -1016,9 +1084,10 @@
   </div>
 
   <div class="feedback">Suggestions? <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yinzermcmullet@gmail.com&su=MacBid+Calculator+Suggestion" target="_blank">yinzermcmullet@gmail.com</a></div>
-  <div class="version">v2.4</div>
+  <div class="version">v2.4.1</div>
 
   <button type="button" class="update-toast" id="updateToast" style="display:none">New version just dropped, yinz &mdash; tap to update</button>
+  <div class="paste-toast" id="pasteToast" style="display:none"></div>
 </div>
 
 <script>
@@ -1557,6 +1626,200 @@
     if (this.value === 'custom') customTaxEl.focus();
     updateDefaultBtn();
     calculate();
+  });
+
+  // ---- paste-and-go: paste a Mac.bid listing link -> auto-fill bid/retail/location ----
+  // Uses mac.bid's public JSON API (api.macdiscount.com, CORS-open). Calc logic untouched.
+  var MACBID_API = 'https://api.macdiscount.com';
+  // Our Cloudflare helper reads the listing server-side (mac.bid blocks browsers); gives bid+retail+location.
+  var HELPER_URL = 'https://macbid-helper.yinzermcmullet.workers.dev';
+  // Mac.bid warehouse name (as the API returns it) -> our dropdown data-loc slug.
+  var LOC_MAP = {
+    'mesa': 'mesa-az', 'phoenix': 'phoenix-az',
+    'colorado springs': 'cosprings-co',
+    'macon': 'macon-ga', 'davenport': 'davenport-ia',
+    'henderson': 'henderson-nv', 'north las vegas': 'nlv-nv',
+    'gastonia': 'gastonia-nc',
+    'canton': 'canton-oh', 'hamilton': 'hamilton-oh', 'akron': 'akron-oh',
+    'warren': 'warren-oh', 'boardman': 'boardman-oh', 'bridgeport': 'bridgeport-oh',
+    'robinson': 'robinson-pa', 'pittsburgh mills': 'pittsburgh-mills-pa', 'tarentum': 'pittsburgh-mills-pa',
+    'monroeville': 'monroeville-pa', 'beaver falls': 'beaver-pa',
+    'butler': 'butler-pa', 'yinz binz': 'butler-yb-pa', 'butler yinz': 'butler-yb-pa',
+    'washington': 'washington-pa', 'uniontown': 'uniontown-pa',
+    'anderson': 'anderson-sc', 'spartanburg': 'cowpens-sc', 'cowpens': 'cowpens-sc',
+    'greenville': 'greenville-sc', 'rock hill': 'rockhill-sc',
+    'jackson': 'jackson-tn',
+    'schertz': 'schertz-tx', 'san antonio': 'sanantonio-tx', 'el paso': 'elpaso-tx'
+  };
+  function normLoc(s) { return String(s || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+  function fmtMoney(n) { n = Number(n); if (!isFinite(n)) return ''; return (n % 1) ? n.toFixed(2) : String(n); }
+
+  // Convert a Mac.bid warehouse name (clean "Schertz" or "/locations" style "Schertz - A") to our slug.
+  function locSlugFromName(name) {
+    if (!name) return null;
+    var base = String(name).replace(/\s*-\s*[A-Za-z]\s*$/, '').trim(); // drop " - A"/" - B" warehouse suffix
+    return LOC_MAP[normLoc(base)] || null;
+  }
+
+  // Pull auction id/number + lot number out of a Mac.bid link (both URL shapes).
+  function parseLotUrl(t) {
+    if (!t) return null;
+    t = String(t);
+    var m = t.match(/auction\/([A-Za-z0-9][A-Za-z0-9\-]*)\/lot\/([A-Za-z0-9]+)/i); // /auction/SZA..-A1/lot/5894C
+    if (m) return { auction: m[1], lot: m[2] };
+    var aid = t.match(/[?&]aid=([0-9]+)/i), lid = t.match(/[?&]lid=([A-Za-z0-9]+)/i); // /?aid=84076&lid=5894C
+    if (aid && lid) return { auction: aid[1], lot: lid[1] };
+    return null;
+  }
+
+  function apiGet(url) {
+    return fetch(url, { headers: { 'Accept': 'application/json' } }).then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    });
+  }
+
+  // location_id -> slug, built once from /locations (cached for the session).
+  var locIdMap = null;
+  function loadLocIdMap() {
+    if (locIdMap) return Promise.resolve(locIdMap);
+    return apiGet(MACBID_API + '/locations').then(function(list) {
+      list = Array.isArray(list) ? list : (list && list.data) || [];
+      var map = {};
+      list.forEach(function(x) {
+        var slug = locSlugFromName(x && x.name);
+        if (slug && x.id != null) map[x.id] = slug;
+      });
+      locIdMap = map;
+      return map;
+    }).catch(function() { return {}; });
+  }
+
+  // From a link: location is reliable (auction-level location_id); retail/bid only when the lot is in
+  // the public auction response (Mac.bid caps it at 100 lots) — those come back null for deep lots.
+  function lookupFromLink(auction, lot) {
+    var lotN = String(lot).toUpperCase();
+    var out = { bid: null, retail: null, locSlug: null, product: null };
+    var locId = null;
+    return apiGet(MACBID_API + '/auctions/' + encodeURIComponent(auction)).then(function(a) {
+      if (a) {
+        locId = a.location_id;
+        var it = ((a.items) || []).filter(function(i) { return String(i.lot_number).toUpperCase() === lotN; })[0];
+        if (it) { out.retail = it.retail_price; out.product = it.product_name; }
+      }
+    }).catch(function() {}).then(loadLocIdMap).then(function(idMap) {
+      if (locId != null && idMap[locId]) out.locSlug = idMap[locId];
+      if (!out.product) return; // can't pin the lot in search without a product name
+      return apiGet(MACBID_API + '/search?q=' + encodeURIComponent(out.product) + '&limit=25').then(function(s) {
+        var m = ((s && s.hits) || []).filter(function(h) {
+          return h.auction_number === auction && String(h.lot_number).toUpperCase() === lotN;
+        })[0];
+        if (m) {
+          if (out.bid == null) out.bid = m.current_bid;
+          if (out.retail == null) out.retail = m.retail_price;
+          if (!out.locSlug) out.locSlug = locSlugFromName(m.auction_location);
+        }
+      }).catch(function() {});
+    }).then(function() { return out; });
+  }
+
+  // From copied listing text: regex retail + current bid + a known warehouse name (no API needed).
+  function parseListingText(t) {
+    t = String(t || '');
+    var out = { bid: null, retail: null, locSlug: null, product: null };
+    function money(re) { var m = t.match(re); return m ? parseFloat(m[1].replace(/,/g, '')) : null; }
+    out.retail = money(/(?:retail|msrp|est(?:imated)?\.?\s*(?:retail|value)|value)\b[^$0-9]{0,18}\$?\s*([0-9][0-9,]*\.?[0-9]*)/i);
+    out.bid = money(/(?:current\s*bid|winning\s*bid|high\s*bid|current\s*price|\bbid\b)[^$0-9]{0,18}\$?\s*([0-9][0-9,]*\.?[0-9]*)/i);
+    var low = t.toLowerCase(), bestKey = null;
+    for (var key in LOC_MAP) { if (low.indexOf(key) !== -1 && (!bestKey || key.length > bestKey.length)) bestKey = key; }
+    if (bestKey) out.locSlug = LOC_MAP[bestKey];
+    if (out.bid == null && out.retail == null && out.locSlug == null) return null;
+    return out;
+  }
+
+  var pasteToastTimer = null;
+  function pasteToast(msg, ok, sticky) {
+    var t = document.getElementById('pasteToast');
+    t.textContent = msg;
+    t.classList.toggle('err', !ok);
+    t.style.display = 'block';
+    if (pasteToastTimer) clearTimeout(pasteToastTimer);
+    if (!sticky) pasteToastTimer = setTimeout(function() { t.style.display = 'none'; }, 5000);
+  }
+  function flashFilled(els) {
+    els.forEach(function(el) { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); });
+    setTimeout(function() { els.forEach(function(el) { el.classList.remove('flash'); }); }, 650);
+  }
+
+  // Fill whatever we found and tell the user exactly what landed + what to add.
+  function applyResult(out) {
+    if (out.bid == null && out.retail == null && !out.locSlug) return false;
+    if (mode !== 'pay') setMode('pay'); // a listing is a "what will I pay?" action; show the numbers
+    var filled = [], got = [], missing = [];
+    if (out.bid != null) { bidEl.value = fmtMoney(out.bid); filled.push(bidEl); got.push('bid'); } else missing.push('bid');
+    if (out.retail != null) { retailEl.value = fmtMoney(out.retail); filled.push(retailEl); got.push('retail'); } else missing.push('retail');
+    if (out.locSlug && setLocationByLoc(out.locSlug)) {
+      customTaxEl.classList.remove('show'); updateDefaultBtn(); filled.push(taxSelectEl); got.push('location');
+    } else missing.push('location');
+    calculate();
+    flashFilled(filled);
+    var name = out.product ? (' — ' + String(out.product).trim().slice(0, 38)) : '';
+    var msg = 'Filled ' + got.join(' + ') + name;
+    if (missing.length) msg += ' · add ' + missing.join(' + ');
+    pasteToast(msg, true);
+    return true;
+  }
+
+  // Ask our Cloudflare helper to read the listing (servers aren't blocked the way browsers are).
+  function fetchViaHelper(rawLink) {
+    return apiGet(HELPER_URL + '/?url=' + encodeURIComponent(rawLink)).then(function(d) {
+      if (!d || !d.ok) return null;
+      return {
+        bid: d.bid != null ? d.bid : null,
+        retail: d.retail != null ? d.retail : null,
+        locSlug: locSlugFromName(d.location),
+        product: d.product || null
+      };
+    }).catch(function() { return null; });
+  }
+
+  function doPaste(text) {
+    if (!text || !text.trim()) { pasteToast('Paste a Mac.bid link', false); return; }
+    var url = parseLotUrl(text);
+    if (url) {
+      pasteToast('Reading the listing…', true, true);
+      fetchViaHelper(text).then(function(out) {
+        if (out) return out;
+        return lookupFromLink(url.auction, url.lot); // fallback: direct API (location for deep lots)
+      }).then(function(out) {
+        if (!out || !applyResult(out)) {
+          pasteToast("Got the link but couldn't read it — try again in a moment", false);
+        }
+      }).catch(function() {
+        pasteToast("Couldn't reach the listing — check your connection", false);
+      });
+      return;
+    }
+    var txt = parseListingText(text); // pasted listing text (no API needed)
+    if (txt) { applyResult(txt); return; }
+    pasteToast("That doesn't look like a Mac.bid link", false);
+  }
+
+  function showPasteFallback() {
+    document.getElementById('pasteRow').classList.add('show');
+    document.getElementById('pasteInput').focus();
+  }
+  document.getElementById('pasteBtn').addEventListener('click', function() {
+    if (navigator.clipboard && navigator.clipboard.readText) {
+      navigator.clipboard.readText().then(function(t) {
+        if (t && t.trim()) { doPaste(t); } else { showPasteFallback(); }
+      }).catch(showPasteFallback);
+    } else {
+      showPasteFallback();
+    }
+  });
+  document.getElementById('pasteGo').addEventListener('click', function() {
+    doPaste(document.getElementById('pasteInput').value);
   });
 
   // ---- share with numbers ----
