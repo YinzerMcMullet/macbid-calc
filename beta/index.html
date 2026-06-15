@@ -1631,6 +1631,8 @@
   // ---- paste-and-go: paste a Mac.bid listing link -> auto-fill bid/retail/location ----
   // Uses mac.bid's public JSON API (api.macdiscount.com, CORS-open). Calc logic untouched.
   var MACBID_API = 'https://api.macdiscount.com';
+  // Our Cloudflare helper reads the listing server-side (mac.bid blocks browsers); gives bid+retail+location.
+  var HELPER_URL = 'https://macbid-helper.yinzermcmullet.workers.dev';
   // Mac.bid warehouse name (as the API returns it) -> our dropdown data-loc slug.
   var LOC_MAP = {
     'mesa': 'mesa-az', 'phoenix': 'phoenix-az',
@@ -1768,23 +1770,39 @@
     return true;
   }
 
+  // Ask our Cloudflare helper to read the listing (servers aren't blocked the way browsers are).
+  function fetchViaHelper(rawLink) {
+    return apiGet(HELPER_URL + '/?url=' + encodeURIComponent(rawLink)).then(function(d) {
+      if (!d || !d.ok) return null;
+      return {
+        bid: d.bid != null ? d.bid : null,
+        retail: d.retail != null ? d.retail : null,
+        locSlug: locSlugFromName(d.location),
+        product: d.product || null
+      };
+    }).catch(function() { return null; });
+  }
+
   function doPaste(text) {
-    if (!text || !text.trim()) { pasteToast('Paste a Mac.bid link, or the copied listing text', false); return; }
+    if (!text || !text.trim()) { pasteToast('Paste a Mac.bid link', false); return; }
     var url = parseLotUrl(text);
     if (url) {
       pasteToast('Reading the listing…', true, true);
-      lookupFromLink(url.auction, url.lot).then(function(out) {
-        if (!applyResult(out)) {
-          pasteToast("Got the link but couldn't read the numbers — paste the listing text instead", false);
+      fetchViaHelper(text).then(function(out) {
+        if (out) return out;
+        return lookupFromLink(url.auction, url.lot); // fallback: direct API (location for deep lots)
+      }).then(function(out) {
+        if (!out || !applyResult(out)) {
+          pasteToast("Got the link but couldn't read it — try again in a moment", false);
         }
       }).catch(function() {
-        pasteToast("Couldn't reach Mac.bid — paste the listing text instead", false);
+        pasteToast("Couldn't reach the listing — check your connection", false);
       });
       return;
     }
-    var txt = parseListingText(text); // not a link — treat as copied listing text
+    var txt = parseListingText(text); // pasted listing text (no API needed)
     if (txt) { applyResult(txt); return; }
-    pasteToast("Couldn't read that — paste a Mac.bid link or the listing text", false);
+    pasteToast("That doesn't look like a Mac.bid link", false);
   }
 
   function showPasteFallback() {
