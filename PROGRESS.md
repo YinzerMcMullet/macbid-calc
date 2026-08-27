@@ -2,7 +2,9 @@
 
 _Last updated: 2026-08-27_
 
-## Status: Research complete — awaiting stack sign-off. No code written yet.
+## Status: Phase 1 build started. Sleeper dashboard v1 works (app/ — Vite+React+TS+Tailwind).
+
+Run locally: `cd app && npm install && npm run dev`. Enter a Sleeper username to load leagues.
 
 ## Done
 - [x] Step 1 research deep-dive (platforms, APIs, player values, news sources, free LLMs, free hosting) → see `RESEARCH.md`
@@ -17,8 +19,8 @@ _Last updated: 2026-08-27_
 
 ## Next (after sign-off) — Phase 1
 - [ ] Scaffold project (Workers + Pages + D1 schema, adapter interfaces)
-- [ ] Sleeper league import (no auth) + normalized internal league model
-- [ ] Multi-league dashboard (leagues, teams, lineups, matchups, waivers, byes)
+- [x] Sleeper league import (no auth) + normalized internal league model (app/)
+- [x] Multi-league dashboard v1: leagues, standings, matchups, rosters (waivers/byes TODO)
 - [ ] Yahoo OAuth + import (once API access approved)
 - [ ] Keeper-aware available-players board (Yahoo keeper league)
 - [ ] Draft cheat sheets (league-scoring-tuned tiers via Sleeper projections raw stats + Boris Chen tier breaks + FFC ADP)
