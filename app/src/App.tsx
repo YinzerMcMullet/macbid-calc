@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { League, Matchup, Player, Roster, SeasonState, Team } from './model'
 import { PLATFORMS } from './config'
+import ValuesView from './ValuesView'
 
 interface LeagueBundle {
   league: League
@@ -72,64 +73,96 @@ export default function App() {
   }
 
   const current = bundles?.find((b) => b.league.id === selected) ?? null
+  const [tab, setTab] = useState<'leagues' | 'values'>(() => (localStorage.getItem(HANDLE_KEY) ? 'leagues' : 'values'))
 
   return (
-    <div className="mx-auto max-w-xl px-4 pb-16">
-      <header className="sticky top-0 z-10 -mx-4 mb-4 flex items-center justify-between bg-surface/90 px-4 py-3 backdrop-blur">
-        <h1 className="text-lg font-bold">
-          {current ? (
-            <button onClick={() => setSelected(null)} className="flex items-center gap-2 text-accent">
-              <span aria-hidden>←</span> {current.league.name}
+    <div className="mx-auto max-w-xl px-4 pb-24">
+      <header className="sticky top-0 z-10 -mx-4 mb-4 flex items-center justify-between border-b border-accent/30 bg-surface/95 px-4 py-3 backdrop-blur">
+        <h1 className="text-lg font-extrabold tracking-tight text-accent">
+          {tab === 'leagues' && current ? (
+            <button onClick={() => setSelected(null)} className="flex items-center gap-2">
+              <span aria-hidden>←</span> <span className="truncate">{current.league.name}</span>
             </button>
           ) : (
             <span>🏈 Command Center</span>
           )}
         </h1>
-        {handle && !current && (
+        {handle && !current && tab === 'leagues' && (
           <button onClick={disconnect} className="text-xs text-gray-400">
             {handle} ✕
           </button>
         )}
       </header>
 
-      {!handle && (
-        <div className="mt-16 flex flex-col gap-3">
-          <p className="text-center text-gray-300">Pull all your leagues into one dashboard.</p>
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && connect()}
-            placeholder="Sleeper username"
-            autoCapitalize="none"
-            autoCorrect="off"
-            className="rounded-xl bg-surface-2 px-4 py-3 text-base outline-none ring-accent focus:ring-2"
-          />
-          <button onClick={connect} className="rounded-xl bg-accent py-3 font-semibold text-black active:opacity-80">
-            Connect Sleeper
-          </button>
-          <p className="text-center text-xs text-gray-500">Yahoo, Fleaflicker, and ESPN are coming next.</p>
-        </div>
-      )}
+      {tab === 'values' && <ValuesView />}
 
-      {error && <p className="rounded-lg bg-loss/10 p-3 text-sm text-loss">{error}</p>}
-      {loading && <p className="animate-pulse py-8 text-center text-gray-400">Loading leagues…</p>}
-
-      {handle && bundles && !current && (
-        <main className="flex flex-col gap-3">
-          {state && (
-            <p className="text-xs tracking-wide text-gray-400 uppercase">
-              {state.season} · {state.seasonType === 'pre' ? 'Preseason' : `Week ${state.week}`} · {bundles.length}{' '}
-              {bundles.length === 1 ? 'league' : 'leagues'}
-            </p>
+      {tab === 'leagues' && (
+        <>
+          {!handle && (
+            <div className="mt-10 flex flex-col gap-3">
+              <p className="text-center text-gray-300">See all your leagues in one dashboard.</p>
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && connect()}
+                placeholder="Sleeper username"
+                autoCapitalize="none"
+                autoCorrect="off"
+                className="rounded-xl bg-surface-2 px-4 py-3 text-base outline-none ring-accent focus:ring-2"
+              />
+              <button onClick={connect} className="rounded-xl bg-accent py-3 font-semibold text-black active:opacity-80">
+                Connect Sleeper
+              </button>
+              <p className="text-center text-xs text-gray-500">
+                Optional — Player Values works without connecting. Yahoo, Fleaflicker, and ESPN coming next.
+              </p>
+            </div>
           )}
-          {bundles.length === 0 && <p className="py-8 text-center text-gray-400">No leagues found for this season.</p>}
-          {bundles.map((b) => (
-            <LeagueCard key={b.league.id} bundle={b} onOpen={() => setSelected(b.league.id)} />
-          ))}
-        </main>
+
+          {error && <p className="rounded-lg bg-loss/10 p-3 text-sm text-loss">{error}</p>}
+          {loading && <p className="animate-pulse py-8 text-center text-gray-400">Loading leagues…</p>}
+
+          {handle && bundles && !current && (
+            <main className="flex flex-col gap-3">
+              {state && (
+                <p className="text-xs tracking-wide text-gray-400 uppercase">
+                  {state.season} · {state.seasonType === 'pre' ? 'Preseason' : `Week ${state.week}`} · {bundles.length}{' '}
+                  {bundles.length === 1 ? 'league' : 'leagues'}
+                </p>
+              )}
+              {bundles.length === 0 && <p className="py-8 text-center text-gray-400">No leagues found for this season.</p>}
+              {bundles.map((b) => (
+                <LeagueCard key={b.league.id} bundle={b} onOpen={() => setSelected(b.league.id)} />
+              ))}
+            </main>
+          )}
+
+          {current && <LeagueDetail bundle={current} players={players} />}
+        </>
       )}
 
-      {current && <LeagueDetail bundle={current} players={players} />}
+      <nav className="fixed inset-x-0 bottom-0 z-10 border-t border-accent/30 bg-surface/95 backdrop-blur">
+        <div className="mx-auto grid max-w-xl grid-cols-2">
+          {(
+            [
+              ['leagues', 'Leagues', '🏟️'],
+              ['values', 'Values', '📈'],
+            ] as const
+          ).map(([id, label, icon]) => (
+            <button
+              key={id}
+              onClick={() => {
+                setTab(id)
+                setSelected(null)
+              }}
+              className={`flex flex-col items-center gap-0.5 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] text-[11px] font-semibold ${tab === id ? 'text-accent' : 'text-gray-500'}`}
+            >
+              <span className="text-base leading-none">{icon}</span>
+              {label}
+            </button>
+          ))}
+        </div>
+      </nav>
     </div>
   )
 }
