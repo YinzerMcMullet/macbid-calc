@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-surface: #12141c;
-  --color-surface-2: #1a1d29;
-  --color-surface-3: #232738;
-  --color-accent: #58a6ff;
+  --color-surface: #0b0b0d;
+  --color-surface-2: #17171a;
+  --color-surface-3: #232326;
+  --color-accent: #ffb612;
   --color-win: #3fb950;
   --color-loss: #f85149;
 }
 
 html {
   background: var(--color-surface);
-  color: #e6e8ee;
+  color: #ececec;
   -webkit-tap-highlight-color: transparent;
 }
 
