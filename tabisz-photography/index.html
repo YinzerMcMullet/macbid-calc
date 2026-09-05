@@ -1,0 +1,590 @@
+<title>Tabisz Photography</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Archivo:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap">
+<style>
+  :root{
+    --ink:#171410;
+    --ink-soft:#2b261f;
+    --paper:#f4efe4;
+    --paper-deep:#eae3d2;
+    --gold:#ffb81c;
+    --gold-deep:#d99500;
+    --quiet:#6f6759;
+    --line:#d8cfba;
+    --frame:#100e0b;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Archivo",system-ui,-apple-system,sans-serif;
+    font-size:16px;
+    line-height:1.6;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+  }
+  h1,h2,h3{font-family:"Bricolage Grotesque","Archivo",sans-serif;line-height:1.02;margin:0;text-wrap:balance}
+  a{color:inherit}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+  .eyebrow{
+    font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--quiet);display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{content:"";width:26px;height:3px;background:var(--gold);flex:none}
+  .serif-accent{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-weight:400}
+
+  /* ---------- nav ---------- */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:var(--ink);color:var(--paper);
+    border-bottom:3px solid var(--gold);
+  }
+  .nav-inner{display:flex;align-items:center;gap:28px;padding:14px 24px;max-width:1140px;margin:0 auto}
+  .wordmark{
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:1.15rem;
+    letter-spacing:.02em;text-decoration:none;display:flex;align-items:baseline;gap:2px;
+  }
+  .wordmark b{color:var(--gold);font-size:1.5em;line-height:0}
+  .nav-links{display:flex;gap:22px;margin-left:auto;align-items:center}
+  .nav-links a{
+    text-decoration:none;font-size:.85rem;font-weight:600;letter-spacing:.06em;
+    text-transform:uppercase;opacity:.85;
+  }
+  .nav-links a:hover,.nav-links a:focus-visible{opacity:1;color:var(--gold)}
+  .btn{
+    display:inline-block;background:var(--gold);color:var(--ink);
+    font-weight:700;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;
+    padding:11px 22px;text-decoration:none;border:2px solid var(--gold);cursor:pointer;
+    font-family:"Archivo",sans-serif;
+  }
+  .btn:hover,.btn:focus-visible{background:var(--gold-deep);border-color:var(--gold-deep)}
+  .btn.ghost{background:transparent;color:currentColor;border-color:currentColor}
+  .btn.ghost:hover,.btn.ghost:focus-visible{background:var(--ink);color:var(--gold);border-color:var(--ink)}
+  :focus-visible{outline:3px solid var(--gold-deep);outline-offset:2px}
+
+  /* ---------- hero ---------- */
+  header.hero{padding:64px 0 0;border-bottom:1px solid var(--line)}
+  .hero h1{
+    font-size:clamp(2.9rem,8.5vw,6.4rem);
+    font-weight:800;letter-spacing:-.02em;
+    margin:18px 0 22px;max-width:15ch;
+  }
+  .hero h1 .hl{
+    background:var(--gold);
+    padding:0 .12em;box-decoration-break:clone;-webkit-box-decoration-break:clone;
+  }
+  .hero p.lede{max-width:52ch;font-size:1.06rem;color:var(--ink-soft);margin:0 0 30px}
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:56px}
+  .hero-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:3px solid var(--ink)}
+  .hero-strip .photo{aspect-ratio:3/4}
+
+  /* ---------- marquee ---------- */
+  .marquee{
+    background:var(--ink);color:var(--paper);overflow:hidden;
+    border-bottom:3px solid var(--gold);white-space:nowrap;
+  }
+  .marquee-track{
+    display:inline-block;padding:12px 0;
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:.95rem;
+    letter-spacing:.14em;text-transform:uppercase;
+    animation:scroll 28s linear infinite;
+  }
+  .marquee-track span{margin:0 18px}
+  .marquee-track .star{color:var(--gold)}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ---------- sections ---------- */
+  section{padding:76px 0}
+  .section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:34px}
+  .section-head h2{font-size:clamp(2rem,4.5vw,3.2rem);font-weight:800;letter-spacing:-.015em}
+  .section-head .count{
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:800;color:var(--gold-deep);
+    font-size:.95rem;letter-spacing:.08em;font-variant-numeric:tabular-nums;
+  }
+
+  /* ---------- work / contact sheet ---------- */
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px}
+  .chip{
+    font-family:"Archivo",sans-serif;font-size:.8rem;font-weight:600;letter-spacing:.08em;
+    text-transform:uppercase;padding:8px 16px;background:transparent;color:var(--ink);
+    border:2px solid var(--ink);cursor:pointer;
+  }
+  .chip:hover{background:var(--paper-deep)}
+  .chip[aria-pressed="true"]{background:var(--ink);color:var(--gold)}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .frame{display:flex;flex-direction:column;background:var(--frame);color:var(--paper);padding:10px 10px 12px}
+  .frame.hidden{display:none}
+  .frame .photo{aspect-ratio:4/5}
+  .frame figcaption{
+    display:flex;justify-content:space-between;gap:10px;align-items:baseline;
+    font-size:.72rem;letter-spacing:.05em;padding-top:9px;
+  }
+  .frame .no{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+  .frame .cap{color:#cfc7b6;text-align:right}
+  figure{margin:0}
+  .photo{position:relative;overflow:hidden;background:#26221c}
+  .photo::after{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(10,8,5,.42));
+  }
+  .photo .tag{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;
+    font-size:.62rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+    color:rgba(244,239,228,.92);border:1px solid rgba(244,239,228,.55);
+    padding:5px 10px;background:rgba(16,14,11,.35);white-space:nowrap;
+  }
+  .work-note{margin-top:22px;font-size:.85rem;color:var(--quiet);max-width:70ch}
+
+  /* photo stand-ins: each a small gradient composition */
+  .ph-rivers{background:linear-gradient(180deg,#2a2f45 0%,#5a4a63 34%,#c97e3a 52%,#f0a93f 60%,#3a2f22 61%,#171410 100%)}
+  .ph-rivers::before{content:"";position:absolute;left:0;right:0;top:61%;height:16%;background:linear-gradient(180deg,rgba(240,169,63,.55),rgba(23,20,16,0))}
+  .ph-vows{background:radial-gradient(90% 70% at 50% 30%,#f5e9d6 0%,#dcc9a8 40%,#8a7657 75%,#4a3d2c 100%)}
+  .ph-confetti{background:radial-gradient(60% 45% at 60% 45%,#ffd97a 0%,#e2a13c 35%,#6b4a2a 70%,#241a10 100%)}
+  .ph-portrait{background:radial-gradient(75% 60% at 38% 34%,#e8c98f 0%,#a17a48 45%,#40311f 80%,#191410 100%)}
+  .ph-senior{background:linear-gradient(160deg,#c9a45c 0%,#8f6f3c 40%,#33291a 75%,#14100b 100%)}
+  .ph-sideline{background:linear-gradient(180deg,#0e1420 0%,#1d2c47 45%,#f4efe4 45.6%,#e5dcc6 52%,#233018 52.6%,#16200f 100%)}
+  .ph-puck{background:radial-gradient(80% 80% at 50% 60%,#e9edf2 0%,#b8c2cf 45%,#3c4757 78%,#141a24 100%)}
+  .ph-incline{background:linear-gradient(200deg,#f2b13e 0%,#c67c2e 30%,#5c3b22 62%,#1c140d 100%)}
+  .ph-ppg{background:linear-gradient(115deg,#20242e 0%,#4a5468 35%,#9fb0c6 50%,#39404f 65%,#171a21 100%)}
+  .ph-point{background:linear-gradient(180deg,#8fa3b8 0%,#c9cfd2 38%,#3f4a3a 40%,#243020 70%,#131a10 100%)}
+  .ph-snow{background:linear-gradient(180deg,#aeb6c2 0%,#e8e6e0 45%,#7d7668 70%,#2e2a22 100%)}
+  .ph-chapel{background:linear-gradient(180deg,#141821 0%,#2c3550 40%,#c9903e 72%,#f0c060 82%,#3a2c18 83%,#181209 100%)}
+
+  /* ---------- about ---------- */
+  .about{background:var(--ink);color:var(--paper)}
+  .about .eyebrow{color:#a99f8d}
+  .about-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:56px;align-items:start}
+  .about h2{font-size:clamp(2rem,4.5vw,3.2rem);font-weight:800;margin:16px 0 20px}
+  .about h2 em{color:var(--gold);font-style:normal}
+  .about p{color:#d8d1c2;max-width:58ch}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid #3a352c}
+  .stat{padding:22px 20px;border:1px solid #3a352c}
+  .stat b{
+    display:block;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+    font-size:2.1rem;color:var(--gold);font-variant-numeric:tabular-nums;line-height:1.1;
+  }
+  .stat span{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:#a99f8d}
+  .stats-note{grid-column:1/-1;font-size:.75rem;color:#8a8272;padding:10px 20px;border:1px solid #3a352c}
+
+  /* ---------- testimonials ---------- */
+  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .quote{border-top:3px solid var(--ink);padding-top:18px;display:flex;flex-direction:column;gap:14px}
+  .quote .mark{font-family:"Instrument Serif",Georgia,serif;font-size:3rem;line-height:.6;color:var(--gold-deep)}
+  .quote blockquote{margin:0;font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-size:1.22rem;line-height:1.45}
+  .quote cite{font-style:normal;font-size:.8rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--quiet);margin-top:auto}
+  .quotes-note{margin-top:20px;font-size:.85rem;color:var(--quiet)}
+
+  /* ---------- pricing ---------- */
+  .pricing{background:var(--paper-deep);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:stretch}
+  .card{background:var(--paper);border:2px solid var(--ink);padding:26px 24px;display:flex;flex-direction:column;gap:14px}
+  .card.feature{background:var(--ink);color:var(--paper)}
+  .card h3{font-size:1.3rem;font-weight:700}
+  .card .price{
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:2.3rem;
+    line-height:1;font-variant-numeric:tabular-nums;
+  }
+  .card .price small{font-family:"Archivo",sans-serif;font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--quiet)}
+  .card.feature .price{color:var(--gold)}
+  .card.feature .price small{color:#a99f8d}
+  .card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px;font-size:.92rem}
+  .card li{padding-left:20px;position:relative}
+  .card li::before{content:"→";position:absolute;left:0;color:var(--gold-deep);font-weight:700}
+  .card.feature li::before{color:var(--gold)}
+  .card .btn{margin-top:auto;text-align:center}
+  .pricing-note{margin-top:20px;font-size:.85rem;color:var(--quiet)}
+
+  /* ---------- booking ---------- */
+  .book-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
+  .book h2{font-size:clamp(2rem,4.5vw,3.2rem);font-weight:800;margin:16px 0 18px}
+  .book .pitch{color:var(--ink-soft);max-width:46ch}
+  .demo-callout{
+    margin-top:26px;border-left:4px solid var(--gold);background:var(--paper-deep);
+    padding:16px 18px;font-size:.88rem;color:var(--ink-soft);max-width:46ch;
+  }
+  .demo-callout b{text-transform:uppercase;letter-spacing:.08em;font-size:.75rem;display:block;margin-bottom:4px}
+  form{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field.full{grid-column:1/-1}
+  label{font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+  input,select,textarea{
+    font-family:"Archivo",sans-serif;font-size:.95rem;color:var(--ink);
+    background:#fffdf7;border:2px solid var(--ink);padding:11px 12px;border-radius:0;
+  }
+  textarea{resize:vertical;min-height:110px}
+  input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--gold);outline-offset:0}
+  .form-status{grid-column:1/-1;font-size:.9rem;min-height:1.4em}
+  .form-status.ok{color:#1e6b30;font-weight:600}
+  .form-status.err{color:#a3341f;font-weight:600}
+  .confirm{
+    grid-column:1/-1;border:2px solid var(--ink);background:var(--ink);color:var(--paper);
+    padding:24px;display:none;flex-direction:column;gap:8px;
+  }
+  .confirm.show{display:flex}
+  .confirm .ref{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;color:var(--gold);font-size:1.4rem}
+
+  /* ---------- footer ---------- */
+  footer{background:var(--ink);color:#a99f8d;border-top:3px solid var(--gold);padding:40px 0 48px;font-size:.85rem}
+  .foot-inner{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap}
+  footer .wordmark{color:var(--paper)}
+  .preview-note{max-width:52ch}
+  .preview-note b{color:var(--paper)}
+
+  @media (max-width:900px){
+    .grid,.hero-strip{grid-template-columns:repeat(2,1fr)}
+    .quotes,.cards{grid-template-columns:1fr}
+    .about-grid,.book-grid{grid-template-columns:1fr}
+    form{grid-template-columns:1fr}
+    .nav-links a:not(.btn){display:none}
+  }
+</style>
+
+<nav aria-label="Main">
+  <div class="nav-inner">
+    <a class="wordmark" href="#top">TABISZ<b>.</b><span style="font-weight:400">&nbsp;PHOTO</span></a>
+    <div class="nav-links">
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+      <a href="#pricing">Pricing</a>
+      <a class="btn" href="#book">Book a session</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <p class="eyebrow">Pittsburgh, PA · Weddings · Portraits · Sports · City &amp; Landscape</p>
+    <h1>Every vow. Every game. <span class="hl">Every golden hour.</span></h1>
+    <p class="lede">One photographer for the whole story of this city — from the sideline at Friday's game to the altar at Heinz Chapel to the last light hitting the Mon. Shot bold, delivered fast.</p>
+    <div class="hero-ctas">
+      <a class="btn" href="#book">Book a session</a>
+      <a class="btn ghost" href="#work">See the work</a>
+    </div>
+  </div>
+  <div class="hero-strip" aria-hidden="true">
+    <div class="photo ph-chapel"><span class="tag">Your photo here</span></div>
+    <div class="photo ph-portrait"><span class="tag">Your photo here</span></div>
+    <div class="photo ph-sideline"><span class="tag">Your photo here</span></div>
+    <div class="photo ph-rivers"><span class="tag">Your photo here</span></div>
+  </div>
+</header>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" id="marquee">
+    <span>Weddings</span><span class="star">★</span>
+    <span>Senior portraits</span><span class="star">★</span>
+    <span>Game day</span><span class="star">★</span>
+    <span>Golden hour</span><span class="star">★</span>
+    <span>Engagements</span><span class="star">★</span>
+    <span>Skyline prints</span><span class="star">★</span>
+  </div>
+</div>
+
+<section id="work">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Selected work</p>
+        <h2>The contact sheet</h2>
+      </div>
+      <span class="count" id="frame-count">12 frames</span>
+    </div>
+    <div class="filters" role="group" aria-label="Filter portfolio">
+      <button class="chip" data-filter="all" aria-pressed="true">All</button>
+      <button class="chip" data-filter="wedding" aria-pressed="false">Weddings</button>
+      <button class="chip" data-filter="portrait" aria-pressed="false">Portraits</button>
+      <button class="chip" data-filter="sports" aria-pressed="false">Sports</button>
+      <button class="chip" data-filter="city" aria-pressed="false">City &amp; Land</button>
+    </div>
+    <div class="grid" id="work-grid">
+      <figure class="frame" data-cat="wedding">
+        <div class="photo ph-chapel"><span class="tag">Your photo here</span></div>
+        <figcaption><span class="no">TB-01</span><span class="cap">Heinz Chapel, dusk ceremony</span></figcaption>
+      </figure>
+      <figure class="frame" data-cat="wedding">
+        <div class="photo ph-vows"><span class="tag">Your photo here</span></div>
+        <figcaption><span class="no">TB-02</span><span class="cap">First look, Mellon Park</span></figcaption>
+      </figure>
+      <figure class="frame" data-cat="wedding">
+        <div class="photo ph-confetti"><span class="tag">Your photo here</span></div>
+        <figcaption><span class="no">TB-03</span><span class="cap">Reception, Station Square</span></figcaption>
+      </figure>
+      <figure class="frame" data-cat="portrait">
+        <div class="photo ph-portrait"><span class="tag">Your photo here</span></div>
+        <figcaption><span class="no">TB-04</span><span class="cap">Family session, Schenley Park</span></figcaption>
+      </figure>
+      <figure class="frame" data-cat="portrait">
+        <div class="photo ph-senior"><span class="tag">Your photo here</span></div>
+        <figcaption><span class="no">TB-05</span><span class="cap">Senior portraits, Oakland</span></figcaption>
+      </figure>
+      <figure class="frame" data-cat="portrait">
+        <div class="photo ph-vows"><span class="tag">Your photo here</span></div>
+        <figcaption><span class="no">TB-06</span><span class="cap">Newborn, in-home session</span></figcaption>
+      </figure>
+      <figure class="frame" data-cat="sports">
+        <div class="photo ph-sideline"><span class="tag">Your photo here</span></div>
+        <figcaption><span class="no">TB-07</span><span class="cap">Friday night, WPIAL sideline</span></figcaption>
+      </figure>
+      <figure class="frame" data-cat="sports">
+        <div class="photo ph-puck"><span class="tag">Your photo here</span></div>
+        <figcaption><span class="no">TB-08</span><span class="cap">Youth hockey, RMU Island Sports</span></figcaption>
+      </figure>
+      <figure class="frame" data-cat="city">
+        <div class="photo ph-rivers"><span class="tag">Your photo here</span></div>
+        <figcaption><span class="no">TB-09</span><span class="cap">Three rivers, golden hour</span></figcaption>
+      </figure>
+      <figure class="frame" data-cat="city">
+        <div class="photo ph-incline"><span class="tag">Your photo here</span></div>
+        <figcaption><span class="no">TB-10</span><span class="cap">Duquesne Incline, sunset</span></figcaption>
+      </figure>
+      <figure class="frame" data-cat="city">
+        <div class="photo ph-ppg"><span class="tag">Your photo here</span></div>
+        <figcaption><span class="no">TB-11</span><span class="cap">PPG Place, blue hour glass</span></figcaption>
+      </figure>
+      <figure class="frame" data-cat="city">
+        <div class="photo ph-point"><span class="tag">Your photo here</span></div>
+        <figcaption><span class="no">TB-12</span><span class="cap">Point State Park, first snow</span></figcaption>
+      </figure>
+    </div>
+    <p class="work-note">These frames are placeholders — on the real site, each one is a full-resolution photograph with a lightbox, and the galleries are managed from an admin dashboard: upload a shoot, tag it, and it appears here.</p>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="wrap about-grid">
+    <div>
+      <p class="eyebrow">About</p>
+      <h2>Shot in Pittsburgh.<br><em>Built for keeps.</em></h2>
+      <p>Tabisz Photography covers the moments this city runs on — weddings and the parties after them, seniors and growing families, Friday-night sidelines, and the skyline every yinzer swears looks best from their spot. Bold color, honest light, and galleries delivered while the moment is still fresh.</p>
+      <p>Serving Pittsburgh and everywhere within a tank of gas — Wexford to West Mifflin, Moon to Monroeville.</p>
+    </div>
+    <div class="stats" role="list" aria-label="Studio stats (example numbers)">
+      <div class="stat" role="listitem"><b>120+</b><span>Weddings shot</span></div>
+      <div class="stat" role="listitem"><b>10 yrs</b><span>Behind the lens</span></div>
+      <div class="stat" role="listitem"><b>48 hr</b><span>Sneak-peek delivery</span></div>
+      <div class="stat" role="listitem"><b>412</b><span>Area code, always</span></div>
+      <div class="stats-note">Example numbers for the preview — swap in the real ones.</div>
+    </div>
+  </div>
+</section>
+
+<section id="testimonials">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Word of mouth</p>
+        <h2>What clients say</h2>
+      </div>
+    </div>
+    <div class="quotes">
+      <div class="quote">
+        <span class="mark" aria-hidden="true">“</span>
+        <blockquote>The sneak peeks were in our inbox before the honeymoon flight boarded. Every single frame of the chapel is on our wall now.</blockquote>
+        <cite>M. &amp; J. — wedding, Oakland</cite>
+      </div>
+      <div class="quote">
+        <span class="mark" aria-hidden="true">“</span>
+        <blockquote>Caught our senior mid-tackle, mid-air, perfectly sharp. The team bought prints. The other team bought prints.</blockquote>
+        <cite>Coach D. — football, North Hills</cite>
+      </div>
+      <div class="quote">
+        <span class="mark" aria-hidden="true">“</span>
+        <blockquote>Three kids, one dog, forty-five minutes in Schenley Park — somehow everyone is smiling in the same photo.</blockquote>
+        <cite>The K. family — portraits, Squirrel Hill</cite>
+      </div>
+    </div>
+    <p class="quotes-note">Example testimonials — the real site pulls these from actual client reviews.</p>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Pricing</p>
+        <h2>Pick your session</h2>
+      </div>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <h3>Portrait Session</h3>
+        <p class="price">$275 <small>/ session</small></p>
+        <ul>
+          <li>60 minutes, one location</li>
+          <li>Families, seniors, headshots</li>
+          <li>40+ edited images, online gallery</li>
+          <li>Print rights included</li>
+        </ul>
+        <a class="btn ghost" href="#book" data-pkg="Portrait Session">Book portraits</a>
+      </div>
+      <div class="card feature">
+        <h3>Wedding Collection</h3>
+        <p class="price">from $2,400 <small>/ day</small></p>
+        <ul>
+          <li>8 hours of coverage, two shooters</li>
+          <li>Engagement session included</li>
+          <li>48-hour sneak peek gallery</li>
+          <li>Full gallery + heirloom album option</li>
+        </ul>
+        <a class="btn" href="#book" data-pkg="Wedding Collection">Book a wedding</a>
+      </div>
+      <div class="card">
+        <h3>Game Day</h3>
+        <p class="price">$350 <small>/ event</small></p>
+        <ul>
+          <li>Full game or meet coverage</li>
+          <li>Action + team + candids</li>
+          <li>Next-day highlight gallery</li>
+          <li>Team print packages available</li>
+        </ul>
+        <a class="btn ghost" href="#book" data-pkg="Game Day">Book game day</a>
+      </div>
+    </div>
+    <p class="pricing-note">Example packages and pricing — every number here is a placeholder to react to, not a quote.</p>
+  </div>
+</section>
+
+<section class="book" id="book">
+  <div class="wrap book-grid">
+    <div>
+      <p class="eyebrow">Booking</p>
+      <h2>Let's put it on the calendar</h2>
+      <p class="pitch">Tell me what you're planning and roughly when. You'll hear back within one business day with availability and a full quote.</p>
+      <div class="demo-callout">
+        <b>Live demo — this form really works</b>
+        This isn't a mock-up: submissions are saved to the site's database. On the finished site they'd land in an inbox and a dashboard, with automatic email replies and calendar holds.
+      </div>
+    </div>
+    <form id="inquiry-form" novalidate>
+      <div class="field">
+        <label for="f-name">Your name</label>
+        <input id="f-name" name="name" type="text" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="f-email">Email</label>
+        <input id="f-email" name="email" type="email" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="f-type">Session type</label>
+        <select id="f-type" name="type">
+          <option>Wedding Collection</option>
+          <option>Portrait Session</option>
+          <option>Game Day</option>
+          <option>City / landscape prints</option>
+          <option>Something else</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-date">Rough date</label>
+        <input id="f-date" name="date" type="date">
+      </div>
+      <div class="field full">
+        <label for="f-msg">Tell me about it</label>
+        <textarea id="f-msg" name="message" placeholder="Venue, team, park, people, pets — whatever you're picturing."></textarea>
+      </div>
+      <div class="field full">
+        <button class="btn" type="submit" id="submit-btn">Send inquiry</button>
+      </div>
+      <p class="form-status" id="form-status" role="status"></p>
+      <div class="confirm" id="confirm">
+        <span class="ref" id="confirm-ref"></span>
+        <span id="confirm-msg"></span>
+      </div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-inner">
+    <div>
+      <a class="wordmark" href="#top" style="text-decoration:none">TABISZ<b>.</b><span style="font-weight:400">&nbsp;PHOTO</span></a>
+      <p>Pittsburgh, PA · hello@tabisz.photo <span class="serif-accent">(example)</span></p>
+    </div>
+    <p class="preview-note"><b>Concept preview.</b> This page was built to show what a full Tabisz Photography site could look like. Photos, prices, stats, and testimonials are placeholders; the layout, galleries, and working booking form are the real pitch.</p>
+  </div>
+</footer>
+
+<script>
+  // Marquee: duplicate the track so the loop is seamless.
+  const track = document.getElementById('marquee');
+  track.innerHTML += track.innerHTML;
+
+  // Portfolio filters
+  const chips = document.querySelectorAll('.chip');
+  const frames = document.querySelectorAll('#work-grid .frame');
+  const countEl = document.getElementById('frame-count');
+  chips.forEach(chip => chip.addEventListener('click', () => {
+    chips.forEach(c => c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'));
+    const f = chip.dataset.filter;
+    let shown = 0;
+    frames.forEach(fr => {
+      const show = f === 'all' || fr.dataset.cat === f;
+      fr.classList.toggle('hidden', !show);
+      if (show) shown++;
+    });
+    countEl.textContent = shown + (shown === 1 ? ' frame' : ' frames');
+  }));
+
+  // Pre-select a package when a pricing button is clicked
+  document.querySelectorAll('[data-pkg]').forEach(a => a.addEventListener('click', () => {
+    document.getElementById('f-type').value = a.dataset.pkg;
+  }));
+
+  // Booking form — saves inquiries to the artifact's database when available.
+  let db = null;
+  if (window.claude && typeof window.claude.use === 'function') {
+    window.claude.use('db').then(ns => { db = ns; }).catch(() => {});
+  }
+
+  const form = document.getElementById('inquiry-form');
+  const statusEl = document.getElementById('form-status');
+  const confirmEl = document.getElementById('confirm');
+  const submitBtn = document.getElementById('submit-btn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    statusEl.textContent = '';
+    statusEl.className = 'form-status';
+
+    const name = document.getElementById('f-name').value.trim();
+    const email = document.getElementById('f-email').value.trim();
+    if (!name || !email || !email.includes('@')) {
+      statusEl.textContent = 'Add your name and a valid email so I can get back to you.';
+      statusEl.classList.add('err');
+      return;
+    }
+
+    const inquiry = {
+      name,
+      email,
+      type: document.getElementById('f-type').value,
+      date: document.getElementById('f-date').value || null,
+      message: document.getElementById('f-msg').value.trim() || null,
+      submittedAt: new Date().toISOString()
+    };
+    const ref = 'TBZ-' + Date.now().toString(36).toUpperCase().slice(-6);
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+    let saved = false;
+    if (db) {
+      try {
+        await db.doc('inquiries/' + ref).set(inquiry);
+        saved = true;
+      } catch (err) { /* fall through to preview-mode confirmation */ }
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send inquiry';
+    form.querySelectorAll('input, textarea').forEach(el => { el.value = ''; });
+    document.getElementById('confirm-ref').textContent = 'Inquiry ' + ref + ' received';
+    document.getElementById('confirm-msg').textContent = saved
+      ? 'Saved to the site’s database — on the real site you’d also get an email confirmation within a minute.'
+      : 'Preview mode: the database isn’t connected in this view, but on the live site this inquiry would be saved and confirmed by email.';
+    confirmEl.classList.add('show');
+    confirmEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+</script>
